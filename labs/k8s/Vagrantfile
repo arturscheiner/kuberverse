@@ -1,0 +1,47 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Every Vagrant development environment requires a box. You can search for
+# boxes at https://atlas.hashicorp.com/search.
+
+BOX_IMAGE = "bento/ubuntu-16.04"
+MASTER_COUNT = 1
+NODE_COUNT = 2
+
+Vagrant.configure("2") do |config|
+
+  (0..MASTER_COUNT-1).each do |i|
+    config.vm.define "kv-master-#{i}" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "kv-master-#{i}"
+      subconfig.vm.network :private_network, ip: "10.8.8.#{i + 10}"
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--cpus", 2]
+        vb.memory = 2048
+      end
+    end
+  end
+  
+  (0..NODE_COUNT-1).each do |i|
+    config.vm.define "kv-worker-#{i}" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "kv-worker-#{i}"
+      subconfig.vm.network :private_network, ip: "10.8.8.#{i + 20}"
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--cpus", 2]
+        vb.memory = 1024
+      end
+    end
+  end
+
+  # Install avahi on all machines  
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y avahi-daemon libnss-mdns traceroute
+  SHELL
+
+  config.vm.provision "shell",
+   run: "always",
+   inline: "swapoff -a"
+
+end
