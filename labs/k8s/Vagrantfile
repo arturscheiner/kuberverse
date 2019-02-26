@@ -1,7 +1,6 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
+# kuberverse lab Vagrant file by Artur Scheiner
 # Every Vagrant development environment requires a box. You can search for
+
 # boxes at https://atlas.hashicorp.com/search.
 
 BOX_IMAGE = "bento/ubuntu-16.04"
