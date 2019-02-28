@@ -1,0 +1,48 @@
+# kuberverse k8s lab provisioner
+# type: kubeadm-pre-cni
+# created by Artur Scheiner - artur.scheiner@gmail.com
+
+BOX_IMAGE = "bento/ubuntu-16.04"
+MASTER_COUNT = 1
+WORKER_COUNT = 2
+
+Vagrant.configure("2") do |config|
+
+  (0..MASTER_COUNT-1).each do |i|
+    config.vm.define "kv-master-#{i}" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "kv-master-#{i}"
+      subconfig.vm.network :private_network, ip: "10.8.8.#{i + 10}"
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--cpus", 2]
+        vb.memory = 2048
+      end
+    end
+  end
+  
+  (0..WORKER_COUNT-1).each do |i|
+    config.vm.define "kv-worker-#{i}" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "kv-worker-#{i}"
+      subconfig.vm.network :private_network, ip: "10.8.8.#{i + 20}"
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--cpus", 2]
+        vb.memory = 1024
+      end
+    end
+  end
+
+  # Install avahi on all machines  
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "deb  http://apt.kubernetes.io/  kubernetes-xenial  main" > /etc/apt/sources.list.d/kubernetes.list
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y avahi-daemon libnss-mdns traceroute htop docker.io kubeadm=1.13.1-00 kubelet=1.13.1-00 kubectl=1.13.1-00
+  SHELL
+
+  config.vm.provision "shell",
+   run: "always",
+   inline: "swapoff -a"
+
+end
