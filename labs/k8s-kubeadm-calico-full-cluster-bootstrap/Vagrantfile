@@ -1,5 +1,5 @@
 # kuberverse k8s lab provisioner
-# type: kubeadm-pre-cni
+# type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 BOX_IMAGE = "bento/ubuntu-16.04"
@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
         vb.memory = 2048
       end
 
-      # Install avahi on all machines  
+      # Installing the necessary packages for this provisioner  
       subconfig.vm.provision "shell", inline: <<-SHELL
         echo "deb  http://apt.kubernetes.io/  kubernetes-xenial  main" > /etc/apt/sources.list.d/kubernetes.list
         curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
       SHELL
 
       if i == 0
-        # Install avahi on all machines  
+        # Starting the creation of the k8s cluster and adjusting configurations  
         subconfig.vm.provision "shell", inline: <<-SHELL
           kubeadm init --pod-network-cidr #{POD_CIDR} --apiserver-advertise-address 10.8.8.10 | tee /vagrant/kubeadm-init.out
           mkdir -p /home/vagrant/.kube       
@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
         vb.memory = 1024
       end
 
-      # Install and provision modules  
+      # Installing the necessary packages for this provisioner   
       subconfig.vm.provision "shell", inline: <<-SHELL
         echo "deb  http://apt.kubernetes.io/  kubernetes-xenial  main" > /etc/apt/sources.list.d/kubernetes.list
         curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
