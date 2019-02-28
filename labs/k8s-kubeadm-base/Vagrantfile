@@ -1,4 +1,5 @@
 # kuberverse k8s lab provisioner
+# type: kubeadm-base
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 BOX_IMAGE = "bento/ubuntu-16.04"
@@ -34,7 +35,7 @@ Vagrant.configure("2") do |config|
   # Install avahi on all machines  
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y avahi-daemon libnss-mdns traceroute
+    apt-get install -y avahi-daemon libnss-mdns traceroute htop
   SHELL
 
   config.vm.provision "shell",
