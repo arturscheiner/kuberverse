@@ -17,7 +17,7 @@ To run the labs you will need to have pre-installed on your computer the latest 
 
 ### Hardware
 
-The rule here is **more is better**. As we will create clusters using virtual machines running on your desk computer or notebook, resources will be needed in the proportion of your use. To be used for study, and using my computer (an old macbook pro late 2012 retina, with a Intel Core i5 processor with 8Gb of memory) as the basis for this labs, I can assure you can run a k8s cluster with 1 masters and 2 workers. Is not the best configuration but is what I have by now.  
+The gold rule here is **more is better**. As we will create clusters using virtual machines running on your desk computer or notebook, resources will be needed in the proportion of your use. To be used for study, and using my computer (an old macbook pro late 2012 retina, with a Intel Core i5 processor with 8Gb of memory) as the basis for this labs, I can assure you can run a k8s cluster with 1 master with 2Gb of memory and 2 workers with 1Gb each. This configuration fits almost all of the 6 scenarios of the CKA and the 4 scenarios of CKAD certification exams.  
 
 ## Available Labs
 
