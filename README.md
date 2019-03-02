@@ -10,7 +10,7 @@ Here, you will find instructions on how to get ready with our labs. The labs whe
 
 ## Available Labs
 
-At this moment we have 3 labs available for you to test out:
+At this moment we have 3 labs available for you to play whit:
 
 ### The kv-k8s-kubeadm labs
 
