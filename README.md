@@ -8,10 +8,16 @@ Here, you will find instructions on how to get ready with our labs. The labs whe
 
 ## System Requirements
 
+### Software
+
 To run the labs you will need to have pre-installed on your computer the latest version of the following softwares:
 
-- a) [Vagrant](www.vagrantup.com) by Hashicorp
-- b) [Virtualbox](virtualbox.org) by Oracle
+- [Vagrant](www.vagrantup.com) by Hashicorp
+- [Virtualbox](virtualbox.org) by Oracle
+
+### Hardware
+
+The rule here is **more is better**. As we will create clusters using virtual machines running on your desk computer or notebook, resources will be needed in the proportion of your use. To be used for study, and using my computer (an old macbook pro late 2012 retina, with a Intel Core i5 processor with 8Gb of memory) as the basis for this labs, I can assure you can run a k8s cluster with 1 masters and 2 workers. Is not the best configuration but is what I have by now.  
 
 ## Available Labs
 
