@@ -23,6 +23,10 @@ The gold rule here is **more is better**. As we will create clusters using virtu
 
 At this moment we have 3 labs available for you to play with:
 
+1. [The kubeadm Empty Lab](https://github.com/arturscheiner/kuberverse/blob/master/docs/kubeadm/k8s-kubeadm-base.md)
+2. [The kubeadm Half Lab](https://github.com/arturscheiner/kuberverse/blob/master/docs/kubeadm/k8s-kubeadm-pre-cni.md)
+3. [The kubeadm Full Lab with Calico Flavor](https://github.com/arturscheiner/kuberverse/blob/master/docs/kubeadm/k8s-kubeadm-calico-full-cluster-bootstrap.md)
+
 ### The kv-k8s-kubeadm labs
 
 As anounced in *december 03, 2018* by the **kubernetes release team** in the [Kubernetes 1.13 Announcement Blog Post](https://kubernetes.io/blog/2018/12/03/kubernetes-1-13-release-announcement/), **kubeadm** is officialy GA. That means a unified and simplified method to deploy k8s clusters without the need to go manually over the steps of configuring individually each component. The scope of **kubeadm** is to be a toolbox for both admins and automated, higher-level system. 
