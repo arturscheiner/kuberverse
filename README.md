@@ -53,13 +53,12 @@ This is the **half lab** created for those who wants to install a k8s cluster us
 
 #### k8s-kubeadm-full
 
-This is the **full lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize even more the time. This template installs and bootstraps automatically a full cluster with the **calico** networking interface. this is the full cluster build that I have created to optimize your study time. Use this if you with to bootstrap a new cluster from zero
-  but do not to run all the commands to bring the cluster up. The end result here is a full-cluster up and running so that you can continue
-  your studies. Useful for those that have decided to "vagrant destroy -f" the previous cluster.
+This is the **full lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize even more the time. This template installs and bootstraps automatically a full cluster with the **calico** networking interface. This is the full cluster build that I have created to optimize your study time.
 
 ##### Use it if: #####
 
-- you have studied a lot the steps involved on a k8s cluster using the kubeadm method;
+- you want a very, very, very easy way to bring a cluster up and running in a couple of minutes;
+- you have studied a lot, the steps involved in the k8s cluster configuration using the kubeadm method;
 - you´re curious and wish to put your hands on a cluster without being involved in the configuration steps but wants to play with _kubectl_;
 - you´re tired to install and configure all the components necessary to bring a cluster up;
 - you wish to get a coffe while the hard work is done automatically for you;
