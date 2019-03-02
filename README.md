@@ -29,7 +29,7 @@ As anounced in *december 03, 2018* by the **kubernetes release team** in the [Ku
 
 The templates presented here are focused on _local environments_ to be used in a way to help you build k8s clusters with **kubeadm**. Let´s go through the available labs for this scenario.
 
-#### k8s-kubeadm-empty
+#### k8s-kubeadm-base - The kubeadm Empty Lab
 
 This is the **empty lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to do almost all the work manually, running the commands necessary to bring the cluster up on a step-by-step way. This template will create the boxes MASTER and WORKERS, with the base recomended OS image (ubuntu 16.04).
 
@@ -39,7 +39,7 @@ This is the **empty lab** created for those who wants to install a k8s cluster u
 - you like to do stuffs manually ir order to have a deeper understanting of what is happening;
 
 
-#### k8s-kubeadm-half
+#### k8s-kubeadm-pre-cni - The kubeadm Half Lab
 
 This is the **half lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize time. This template installs automatically all the packages upgrades to the base recomended OS image (ubuntu 16.04). This template also installs the packages for docker, kubernetes and all their dependencies. No kubernetes configuration is done here.
 
@@ -51,7 +51,7 @@ This is the **half lab** created for those who wants to install a k8s cluster us
 - you want to use choose your networking settings (calico, flannel, etc) and
 
 
-#### k8s-kubeadm-full
+#### k8s-kubeadm-calico-full-cluster-bootstrap - The kubeadm Full Lab with Calico Flavor
 
 This is the **full lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize even more the time. This template installs and bootstraps automatically a full cluster with the **calico** networking interface. This is the full cluster build that I have created to optimize your study time.
 
