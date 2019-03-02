@@ -29,21 +29,37 @@ As anounced in *december 03, 2018* by the **kubernetes release team** in the [Ku
 
 The templates presented here are focused on _local environments_ to be used in a way to help you build k8s clusters with **kubeadm**. Let´s go through the available labs for this scenario.
 
-#### k8s-kubeadm-base
+#### k8s-kubeadm-empty
 
-This is the **base lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to do almost all the work manually, running the commands necessary to bring the cluster up on a step-by-step way. This template will create the boxes necessarya from the base OS image (ubuntu 16.04), follow the directory to get directions about how to use this template
-  Use it if you're new to kubernetes and wish to start your first cluster running all the commands needed to create your environment.
+This is the **empty lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to do almost all the work manually, running the commands necessary to bring the cluster up on a step-by-step way. This template will create the boxes MASTER and WORKERS, with the base recomended OS image (ubuntu 16.04).
 
-#### k8s-kubeadm-pre-cni
-  this is the pre-cni lab from those who wants to install a cluster using the kubeadm method, but wish optimize time because this template 
-  installs automatically docker, kubernetes and the their dependencies. No kubernetes configuration is done here.
-  Use it if you're creating a second cluster or have used "vagrant destroy -f" on the directory of your previous lab. This templates goes
-  up to the point where you need to rum "kubeadm init" on the master and after "kubeadm join" on the workers.
+##### Use it if: #####
 
-#### k8s-kubeadm-calico-full-cluster-bootstrap
-  this is the full cluster build that I have created to optimize your study time. Use this if you with to bootstrap a new cluster from zero
+- you're new to kubernetes and wish to start your first cluster running all the commands needed to create your study cluster environment;
+- you like to do stuffs manually ir order to have a deeper understanting of what is happening;
+
+
+#### k8s-kubeadm-half
+
+This is the **half lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize time. This template installs automatically all the packages upgrades to the base recomended OS image (ubuntu 16.04). This template also installs the packages for docker, kubernetes and all their dependencies. No kubernetes configuration is done here.
+
+##### Use it if: #####
+
+- you have played already with the first template and have "destroyed" your previous cluster using the _vagrant destroy -f_ command;
+- you want just to configure kubernetes but do not want to install the packages manually on each MASTER and WORKER of your setup;
+- you want to play with _kubeadm init_ on the masters and _kubeadm join_ on the workers;
+- you want to use choose your networking settings (calico, flannel, etc) and
+
+
+#### k8s-kubeadm-full
+
+This is the **full lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize even more the time. This template installs and bootstraps automatically a full cluster with the **calico** networking interface. this is the full cluster build that I have created to optimize your study time. Use this if you with to bootstrap a new cluster from zero
   but do not to run all the commands to bring the cluster up. The end result here is a full-cluster up and running so that you can continue
   your studies. Useful for those that have decided to "vagrant destroy -f" the previous cluster.
 
+##### Use it if: #####
 
-
+- you have studied a lot the steps involved on a k8s cluster using the kubeadm method;
+- you´re curious and wish to put your hands on a cluster without being involved in the configuration steps but wants to play with _kubectl_;
+- you´re tired to install and configure all the components necessary to bring a cluster up;
+- you wish to get a coffe while the hard work is done automatically for you;
