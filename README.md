@@ -52,7 +52,7 @@ This is the **half lab** created for those who wants to install a k8s cluster us
 - you have played already with the first template and have "destroyed" your previous cluster using the _vagrant destroy -f_ command;
 - you want just to configure kubernetes but do not want to install the packages manually on each MASTER and WORKER of your setup;
 - you want to play with _kubeadm init_ on the masters and _kubeadm join_ on the workers;
-- you want to use choose your networking settings (calico, flannel, etc) and
+- you want to choose your networking settings (calico, flannel, etc) 
 
 
 #### k8s-kubeadm-calico-full-cluster-bootstrap - The kubeadm Full Lab with Calico Flavor

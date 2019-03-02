@@ -1,4 +1,4 @@
-# k8s-kubeadm-calico-full-cluster-bootstrap - The kubeadm Full Lab with Calico Flavor
+# The kubeadm Full Lab with Calico Flavor
 
 This is the **full lab** created for those who wants to install a k8s cluster using the kubeadm method but wish to optimize even more the time. This template installs and bootstraps automatically a full cluster with the **calico** networking interface. This is the full cluster build that I have created to optimize your study time.
 
@@ -31,7 +31,7 @@ http://bit.ly/kv-lab-k8s-ka-cal-fcb-vf
 make -p kuberverse/kv-full
 ```
 
-2. Import the Vagrantfile file to this directory ****
+2. Import the Vagrantfile file to this directory
 
 ```bash
 cd kuberverse/kv-full
@@ -57,3 +57,7 @@ vagrant ssh **_machine-name_**
 ```
 
 ex: _vagrant ssh kv-master-0_
+
+## Next Steps ##
+
+After provisioning this environment you will need to follow the steps describe on _kuberverse youtube_ or _kubeverse blog_
