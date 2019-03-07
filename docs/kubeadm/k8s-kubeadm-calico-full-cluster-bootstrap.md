@@ -28,7 +28,7 @@ http://bit.ly/kv-lab-k8s-ka-cal-fcb-vf
 
 1. Create a directory
 ```bash
-make -p kuberverse/kv-full
+mkdir -p kuberverse/kv-full
 ```
 
 2. Import the Vagrantfile file to this directory
