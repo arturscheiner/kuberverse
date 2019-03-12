@@ -1,7 +1,7 @@
 # kuberverse
 
-Hello kubers, welcome to kuberverse repo! This is the place where we publish the files used on our Youtube recording labs!
 ![kuberverse logo](https://raw.githubusercontent.com/arturscheiner/kuberverse/master/logos/kuberverse-logo-h-4096x2304.png)
+Hello kubers, welcome to kuberverse repo! This is the place where we publish the files used on our Youtube recording labs!
 
 ## Getting Started
 
