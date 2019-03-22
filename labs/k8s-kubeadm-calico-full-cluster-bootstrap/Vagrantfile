@@ -44,6 +44,7 @@ Vagrant.configure("2") do |config|
          sed "s+192.168.0.0/16+#{POD_CIDR}+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
          kubectl apply -f /tmp/calico-defined.yaml
          rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
+         echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.10 > /etc/default/kubelet
         SHELL
       end
 
@@ -70,7 +71,7 @@ Vagrant.configure("2") do |config|
 
         # Extract and execute the kubeadm join command from the exported file
         $(cat /vagrant/kubeadm-init.out | grep "kubeadm join")
-
+        echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.#{i + 20} > /etc/default/kubelet
       SHELL
     end
   end
