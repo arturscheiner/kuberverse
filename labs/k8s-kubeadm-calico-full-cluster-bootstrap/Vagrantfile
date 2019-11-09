@@ -70,7 +70,7 @@ Vagrant.configure("2") do |config|
         apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker.io kubeadm kubelet kubectl
 
         # Extract and execute the kubeadm join command from the exported file
-        $(cat /vagrant/kubeadm-init.out | grep "kubeadm join")
+        $(cat /vagrant/kubeadm-init.out | grep -A 2 "kubeadm join" | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
         echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.#{i + 20} > /etc/default/kubelet
       SHELL
     end
