@@ -18,11 +18,11 @@ echo "********** $KVMSG"
 echo "********** $KVMSG"
 apt-get update
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Upgrading Packages"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
+#echo "********** $KVMSG"
+#echo "********** $KVMSG"
+#echo "********** $KVMSG ->> Upgrading Packages"
+#echo "********** $KVMSG"
+#echo "********** $KVMSG"
 #apt-get upgrade -y
 
 echo "********** $KVMSG"
