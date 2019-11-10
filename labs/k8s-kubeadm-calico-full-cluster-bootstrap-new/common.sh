@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-echo **********
-echo **********
+VAR=$1
+echo ********** $VAR
+echo ********** $VAR
 echo ********** Adding Kubernetes Repo
 echo **********
 echo **********
