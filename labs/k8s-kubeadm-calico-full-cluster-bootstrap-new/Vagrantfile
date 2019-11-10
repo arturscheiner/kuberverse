@@ -12,8 +12,8 @@ POD_CIDR = "172.18.0.0/16"
 API_ADV_ADDRESS = "10.8.8.10"
 KVMSG = "Kuberverse"
 COMMON_SCRIPT_URL = "http://bit.ly/kv-k8s-full-common"
-MASTER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-masters"
-WORKER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-workers"
+MASTER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-master"
+WORKER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-worker"
 
 Vagrant.configure("2") do |config|
 
