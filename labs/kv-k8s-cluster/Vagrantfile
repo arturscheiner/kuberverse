@@ -1,9 +1,9 @@
 # kuberverse k8s lab provisioner
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
-# dependencies: http://bit.ly/kv-k8s-full-common
-#               http://bit.ly/kv-k8s-full-master
-#               http://bit.ly/kv-k8s-full-worker
+# dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/common.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/master.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/worker.sh
 
 BOX_IMAGE = "bento/ubuntu-16.04"
 MASTER_COUNT = 1
@@ -11,9 +11,9 @@ WORKER_COUNT = 2
 POD_CIDR = "172.18.0.0/16"
 API_ADV_ADDRESS = "10.8.8.10"
 KVMSG = "Kuberverse"
-COMMON_SCRIPT_URL = "http://bit.ly/kv-k8s-full-common"
-MASTER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-master"
-WORKER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-worker"
+COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/common.sh"
+MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/master.sh"
+WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/worker.sh"
 
 Vagrant.configure("2") do |config|
 
