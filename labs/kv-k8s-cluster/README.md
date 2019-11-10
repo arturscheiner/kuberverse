@@ -4,7 +4,12 @@ This is the **full lab** created for those who wants to install a k8s cluster us
 
 ### Latest Changes ###
 
-- Vagrantfile rewrite
+This lab was recently updated to run the latest version of Kubernetes 1.16. The cluster runs over Ubuntu 16.04 and the container runtime chosen was Docker 18.09. All links and references where updated to reflect the actual changes. The overall experience was maintained from the previous version, but the script was divided into 4 different pieces:
+
+- New Vagrantfile
+- New common.sh
+- New master.sh
+- New worker.sh
 
 ##### Use it if: #####
 
