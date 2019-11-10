@@ -9,6 +9,9 @@ BOX_IMAGE = "bento/ubuntu-16.04"
 MASTER_COUNT = 1
 WORKER_COUNT = 2
 POD_CIDR = "172.18.0.0/16"
+COMMON_SCRIPT_URL = "http://bit.ly/kv-k8s-full-common"
+MASTER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-masters"
+WORKER_SCRIPT_URL = "http://bit.ly/kv-k8s-full-workers"
 
 Vagrant.configure("2") do |config|
 
@@ -16,7 +19,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell" do |s|
       s.inline = <<-SCRIPT
          mkdir -p /home/vagrant/.kv
-         wget http://bit.ly/kv-k8s-full-common -O /home/vagrant/.kv/common.sh
+         wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
          chmod +x /home/vagrant/.kv/common.sh
          /home/vagrant/.kv/common.sh "hello, world!"
       SCRIPT
