@@ -19,23 +19,23 @@ To run the labs you will need to have pre-installed on your computer the latest 
 - [Vagrant](www.vagrantup.com) by Hashicorp
 - [Virtualbox](virtualbox.org) by Oracle
 
-### Tiny URL ###
+### URL ###
 
-http://bit.ly/kv-lab-k8s-ka-cal-fcb-vf
+https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/Vagrantfile
 
 
 ### Steps To Run ###
 
 1. Create a directory
 ```bash
-mkdir -p kuberverse/kv-full
+mkdir -p kuberverse/kv-k8s-cluster
 ```
 
 2. Import the Vagrantfile file to this directory
 
 ```bash
-cd kuberverse/kv-full
-wget http://bit.ly/kv-lab-k8s-ka-cal-fcb-vf -O Vagrantfile
+cd kuberverse/kv-k8s-cluster
+wget https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/Vagrantfile -O Vagrantfile
 ```
 
 3. Execute the vagrant command to startup the multi-machine environment
