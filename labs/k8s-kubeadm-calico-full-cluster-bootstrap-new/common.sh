@@ -33,13 +33,6 @@ echo "********** $KVMSG"
 echo "********** $KVMSG"
 apt-get update
 
-#echo "********** $KVMSG"
-#echo "********** $KVMSG"
-#echo "********** $KVMSG ->> Upgrading Packages"
-#echo "********** $KVMSG"
-#echo "********** $KVMSG"
-#apt-get upgrade -y
-
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 echo "********** $KVMSG ->> Installing Required & Recommended Packages"
@@ -59,9 +52,7 @@ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
-#mkdir -p /etc/systemd/system/docker.service.d
-
-systemctl enable docker.service
+mkdir -p /etc/systemd/system/docker.service.d
 
 # Restart docker.
 systemctl daemon-reload
