@@ -15,9 +15,10 @@ Vagrant.configure("2") do |config|
   # Installing the necessary packages for this provisioner  
   config.vm.provision "shell" do |s|
       s.inline = <<-SCRIPT
-         wget http://bit.ly/kv-k8s-full-common -O common.sh
-         chmod +x common.sh
-         common.sh "hello, world!"
+         mkdir -p /home/vagrant/.kv
+         wget http://bit.ly/kv-k8s-full-common -O /home/vagrant/.kv/common.sh
+         chmod +x /home/vagrant/.kv/common.sh
+         /home/vagrant/.kv/common.sh "hello, world!"
       SCRIPT
       #s.inline = ""
       #s.inline = "chmod +x common.sh"
