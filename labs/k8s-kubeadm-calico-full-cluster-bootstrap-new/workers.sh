@@ -1,29 +1,17 @@
 #!/usr/bin/env bash
-echo **********
-echo **********
-echo ********** Adding Kubernetes Repo
-echo **********
-echo **********
-echo "deb  http://apt.kubernetes.io/  kubernetes-xenial  main" > /etc/apt/sources.list.d/kubernetes.list
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
-echo **********
-echo **********
-echo ********** Updating Repo
-echo **********
-echo **********
-apt-get update
+KVMSG=$1
+NODE=$2
+NODE_HOST_IP=20+$NODE
+POD_CIDR=$3
+API_ADV_ADDRESS=$4
 
-echo **********
-echo **********
-echo ********** Upgrading Packages
-echo **********
-echo **********
-apt-get upgrade -y
+echo "********** $KVMSG"
+echo "********** $KVMSG"
+echo "********** $KVMSG ->> Joining Kubernetes Cluster"
+echo "********** $KVMSG ->> Worker Node $NODE"
+echo "********** $KVMSG ->> kv-worker-$NODE"
 
-echo **********
-echo **********
-echo ********** Installing Required & Recommended Packages
-echo **********
-echo **********
-apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker.io kubeadm kubelet kubectl
+# Extract and execute the kubeadm join command from the exported file
+$(cat /vagrant/kubeadm-init.out | grep -A 2 "kubeadm join" | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
+echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.$NODE_HOST_IP > /etc/default/kubelet
