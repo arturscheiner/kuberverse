@@ -23,7 +23,7 @@ echo "********** $KVMSG"
 echo "********** $KVMSG ->> Upgrading Packages"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-apt-get upgrade -y
+#apt-get upgrade -y
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
