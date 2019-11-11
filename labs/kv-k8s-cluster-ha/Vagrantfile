@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
           mkdir -p /home/vagrant/.kv
           wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/hapixy.sh
           chmod +x /home/vagrant/.kv/hapixy.sh
-          /home/vagrant/.kv/hapixy.sh #{KVMSG} #{i} #{POD_CIDR} #{API_ADV_ADDRESS}
+          /home/vagrant/.kv/hapixy.sh #{KVMSG} #{MASTER_COUNT} #{POD_CIDR} #{API_ADV_ADDRESS}
         SCRIPT
       end
     end
