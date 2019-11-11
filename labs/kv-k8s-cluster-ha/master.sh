@@ -14,6 +14,11 @@ echo "********** $KVMSG ->> Initializing Kubernetes Cluster"
 echo "********** $KVMSG ->> Master Node $NODE"
 echo "********** $KVMSG ->> kv-master-$NODE"
 #kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $API_ADV_ADDRESS | tee /vagrant/kubeadm-init.out
+if (( $NODE == 0 )) ; then
+    kubeadm init --control-plane-endpoint "kv-hapixy-0.local:6443" --upload-certs --pod-network-cidr $POD_CIDR
+else
+    echo "nothing to do"
+fi
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -33,13 +38,13 @@ echo "********** $KVMSG ->> Configuring Kubernetes Cluster Calico Networking"
 echo "********** $KVMSG ->> Downloading Calico YAML File"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-# wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
-# #wget -q https://bit.ly/kv-lab-k8s-calico-yaml -O /tmp/calico-default.yaml
-# sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
+wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
+#wget -q https://bit.ly/kv-lab-k8s-calico-yaml -O /tmp/calico-default.yaml
+sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
 echo "********** $KVMSG ->> Applying Calico YAML File"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-# kubectl apply -f /tmp/calico-defined.yaml
-# rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
-# echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.1$NODE > /etc/default/kubelet
+kubectl apply -f /tmp/calico-defined.yaml
+rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
+echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.1$NODE > /etc/default/kubelet
