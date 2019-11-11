@@ -19,9 +19,11 @@ echo "********** $KVMSG ->> kv-worker-$NODE"
 #$(cat /vagrant/kubeadm-init.out | grep -A 2 "kubeadm join" | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
 #echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.$NODE_HOST_IP > /etc/default/kubelet
 
+add-apt-repository ppa:vbernat/haproxy-2.0 -y
+
 apt-get install -y haproxy
 
-cat > /etc/haproxy.cfg <<EOF
+cat >> /etc/haproxy.cfg <<EOF
 frontend kv-api-server
     bind *:6443
     option tcplog
