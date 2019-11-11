@@ -23,21 +23,24 @@ WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 Vagrant.configure("2") do |config|
 
   # Installing the necessary packages for this provisioner
-  # if BOX_IMAGE["ubuntu"]
-  #   config.vm.provision "shell" do |s|
-  #       s.inline = <<-SCRIPT
-  #         mkdir -p /home/vagrant/.kv
-  #         wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-  #         chmod +x /home/vagrant/.kv/common.sh
-  #         /home/vagrant/.kv/common.sh #{KVMSG}
-  #       SCRIPT
-  #   end
-  # end
+  if BOX_IMAGE["ubuntu"]
+    config.vm.provision "shell" do |s|
+        s.inline = <<-SCRIPT
+          mkdir -p /home/vagrant/.kv
+          wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+          chmod +x /home/vagrant/.kv/common.sh
+          /home/vagrant/.kv/common.sh #{KVMSG}
+        SCRIPT
+    end
+  end
 
   if MASTER_COUNT > 1
     config.vm.define "kv-hapixy-0" do |ha|
       ha.vm.box = NLB_IMAGE
       ha.vm.hostname = "kv-hapixy-0"
+      ha.ssh.username = "vagrant"
+      ha.ssh.password = "vagrant"
+      ha.ssh.insert_key = true
       ha.vm.network :private_network, ip: "#{LB_ADDRESS}"
       ha.vm.network "forwarded_port", guest: 6443, host: 6443
     end
