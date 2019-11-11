@@ -23,16 +23,16 @@ WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 Vagrant.configure("2") do |config|
 
   # Installing the necessary packages for this provisioner
-  if BOX_IMAGE["ubuntu"]
-    config.vm.provision "shell" do |s|
-        s.inline = <<-SCRIPT
-          mkdir -p /home/vagrant/.kv
-          wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-          chmod +x /home/vagrant/.kv/common.sh
-          /home/vagrant/.kv/common.sh #{KVMSG}
-        SCRIPT
-    end
-  end
+  # if BOX_IMAGE["ubuntu"]
+  #   config.vm.provision "shell" do |s|
+  #       s.inline = <<-SCRIPT
+  #         mkdir -p /home/vagrant/.kv
+  #         wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+  #         chmod +x /home/vagrant/.kv/common.sh
+  #         /home/vagrant/.kv/common.sh #{KVMSG}
+  #       SCRIPT
+  #   end
+  # end
 
   if MASTER_COUNT > 1
     config.vm.define "kv-hapixy-0" do |ha|
