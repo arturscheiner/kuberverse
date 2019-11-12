@@ -4,16 +4,12 @@
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 KVMSG=$1
-NODE=$2
-NODE_HOST_IP=20+$NODE
-POD_CIDR=$3
-API_ADV_ADDRESS=$4
+MASTER_COUNT=$2
+LB_ADDRESS=$3
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-echo "********** $KVMSG ->> Joining Kubernetes Cluster"
-echo "********** $KVMSG ->> Worker Node $NODE"
-echo "********** $KVMSG ->> kv-worker-$NODE"
+
 
 # Extract and execute the kubeadm join command from the exported file
 #$(cat /vagrant/kubeadm-init.out | grep -A 2 "kubeadm join" | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
@@ -25,24 +21,33 @@ apt-get install -y haproxy
 
 cat >> /etc/haproxy.cfg <<EOF
 frontend kv-api-server
-    bind 10.8.8.6:6443
-        mode tcp
-        log global
-        option tcplog
-        timeout client 3600s
-        backlog 4096
-        maxconn 50000
+    bind $LB_ADDRESS:6443
+    mode tcp
+    log global
+    option tcplog
+    timeout client 3600s
+    backlog 4096
+    maxconn 50000
     use_backend kv-control-plane
 
 backend kv-control-plane
-        mode  tcp
-        option log-health-checks
-        option redispatch
-        option tcplog
-        balance roundrobin
-        timeout connect 1s
-        timeout queue 5s
-        timeout server 3600s
+    mode  tcp
+    option log-health-checks
+    option redispatch
+    option tcplog
+    balance roundrobin
+    timeout connect 1s
+    timeout queue 5s
+    timeout server 3600s
     server kv-master-0 10.8.8.10:6443 check
     server kv-master-1 10.8.8.11:6443 check
 EOF
+
+i=0
+while [ $i -le $MASTER_COUNT ]
+do
+cat >> haproxy.cfg <<EOF
+        server kv-master-0 10.8.8.1$i:6443 check
+EOF
+  ((i++))
+done

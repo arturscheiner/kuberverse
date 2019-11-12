@@ -5,6 +5,7 @@
 
 #variable definitions
 KVMSG=$1
+NODE_ADDRESS=$2
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
