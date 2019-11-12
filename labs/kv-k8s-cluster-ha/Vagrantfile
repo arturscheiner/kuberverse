@@ -93,7 +93,7 @@ Vagrant.configure("2") do |config|
 
           wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
           chmod +x /home/vagrant/.kv/worker.sh
-          /home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{POD_CIDR} #{API_ADV_ADDRESS}
+          #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{POD_CIDR} #{API_ADV_ADDRESS}
         SCRIPT
       end
 
