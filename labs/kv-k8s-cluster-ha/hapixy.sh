@@ -25,15 +25,24 @@ apt-get install -y haproxy
 
 cat >> /etc/haproxy.cfg <<EOF
 frontend kv-api-server
-    bind *:6443
-    option tcplog
-    mode tcp
+    bind 10.8.8.6:6443
+        mode tcp
+        log global
+        option tcplog
+        timeout client 3600s
+        backlog 4096
+        maxconn 50000
     use_backend kv-control-plane
 
 backend kv-control-plane
-    mode tcp
-    balance roundrobin
-    option ssl-hello-chk
+        mode  tcp
+        option log-health-checks
+        option redispatch
+        option tcplog
+        balance roundrobin
+        timeout connect 1s
+        timeout queue 5s
+        timeout server 3600s
     server kv-master-0 10.8.8.10:6443 check
     server kv-master-1 10.8.8.11:6443 check
 EOF
