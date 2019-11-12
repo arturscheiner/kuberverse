@@ -16,7 +16,7 @@ echo "********** $KVMSG"
 #echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.$NODE_HOST_IP > /etc/default/kubelet
 
 add-apt-repository ppa:vbernat/haproxy-2.0 -y
-
+apt-get udpate
 apt-get install -y haproxy
 
 cat >> /etc/haproxy.cfg <<EOF
