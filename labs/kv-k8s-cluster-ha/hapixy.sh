@@ -39,8 +39,6 @@ backend kv-control-plane
     timeout connect 1s
     timeout queue 5s
     timeout server 3600s
-    server kv-master-0 10.8.8.10:6443 check
-    server kv-master-1 10.8.8.11:6443 check
 EOF
 
 i=0
