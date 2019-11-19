@@ -20,7 +20,7 @@ apt-get udpate
 apt-get install -y haproxy
 
 cat >> /etc/haproxy.cfg <<EOF
-frontend kv-api-server
+frontend kv-scaler
     bind $LB_ADDRESS:6443
     mode tcp
     log global
@@ -28,9 +28,9 @@ frontend kv-api-server
     timeout client 3600s
     backlog 4096
     maxconn 50000
-    use_backend kv-control-plane
+    use_backend kv-masters
 
-backend kv-control-plane
+backend kv-masters
     mode  tcp
     option log-health-checks
     option redispatch
@@ -45,7 +45,7 @@ i=0
 while [ $i -le $MASTER_COUNT ]
 do
 cat >> haproxy.cfg <<EOF
-        server kv-master-0 10.8.8.1$i:6443 check
+        server kv-master-$i 10.8.8.1$i:6443 check
 EOF
   ((i++))
 done
