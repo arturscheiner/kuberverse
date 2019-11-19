@@ -10,7 +10,7 @@ LB_ADDRESS=$3
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 
-add-apt-repository ppa:vbernat/haproxy-2.0 -y
+#add-apt-repository ppa:vbernat/haproxy-2.0 -y
 apt udpate
 apt install -y haproxy
 
