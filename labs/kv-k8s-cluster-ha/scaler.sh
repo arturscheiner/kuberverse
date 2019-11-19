@@ -45,6 +45,6 @@ EOF
 done
 
 add-apt-repository ppa:vbernat/haproxy-2.0 -y
-apt-get upgrade -y
+apt-get upgrade haproxy -y
 
 systemctl restart haproxy
