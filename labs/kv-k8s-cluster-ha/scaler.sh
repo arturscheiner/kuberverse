@@ -11,10 +11,7 @@ echo "********** $KVMSG"
 echo "********** $KVMSG"
 
 ### Install packages to allow apt to use a repository over HTTPS
-apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common
-
-add-apt-repository ppa:vbernat/haproxy-2.0 -y
-apt-get udpate && apt-get install -y haproxy
+apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common haproxy
 
 cat >> /etc/haproxy.cfg <<EOF
 frontend kv-scaler
@@ -46,3 +43,8 @@ cat >> haproxy.cfg <<EOF
 EOF
   ((i++))
 done
+
+add-apt-repository ppa:vbernat/haproxy-2.0 -y
+apt-get upgrade -y
+
+systemctl restart haproxy
