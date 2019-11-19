@@ -1,40 +1,42 @@
 # kuberverse k8s lab provisioner
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
-# dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/common.sh
-#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/master.sh
-#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster/worker.sh
+# dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh
 
 BOX_IMAGE = "bento/ubuntu-16.04"
 NLB_IMAGE = "alpine/alpine64"
 
 MASTER_COUNT = 2
 WORKER_COUNT = 1
+
 POD_CIDR = "172.18.0.0/16"
 API_ADV_ADDRESS = "10.8.8.10"
 LB_ADDRESS = "10.8.8.6"
 KVMSG = "Kuberverse"
 
 COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh"
-HAPRXY_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/hapixy.sh"
+HAPRXY_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh"
 MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh"
 WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
 
 Vagrant.configure("2") do |config|
 
   if MASTER_COUNT > 1
-    config.vm.define "kv-hapixy-0" do |ha|
+    config.vm.define "kv-scaler-0" do |ha|
       ha.vm.box = BOX_IMAGE
-      ha.vm.hostname = "kv-hapixy-0"
+      ha.vm.hostname = "kv-scaler-0"
       ha.vm.network :private_network, ip: "#{LB_ADDRESS}"
       ha.vm.network "forwarded_port", guest: 6443, host: 6443
 
       ha.vm.provision "shell" do |s|
         s.inline = <<-SCRIPT
           mkdir -p /home/vagrant/.kv
-          wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/hapixy.sh
-          chmod +x /home/vagrant/.kv/hapixy.sh
-          /home/vagrant/.kv/hapixy.sh #{KVMSG} #{MASTER_COUNT} #{LB_ADDRESS}
+          wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
+          chmod +x /home/vagrant/.kv/scaler.sh
+          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{LB_ADDRESS}
         SCRIPT
       end
     end
