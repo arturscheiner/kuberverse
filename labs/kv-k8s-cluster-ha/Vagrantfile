@@ -7,7 +7,6 @@
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh
 
 BOX_IMAGE = "bento/ubuntu-16.04"
-NLB_IMAGE = "alpine/alpine64"
 
 MASTER_COUNT = 2
 WORKER_COUNT = 1
