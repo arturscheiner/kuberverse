@@ -64,8 +64,8 @@ EOF
 i=0
 while [ $i -le $MASTER_COUNT ]
 do
-cat >> haproxy.cfg <<EOF
-        server kv-master-$i 10.8.8.1$i:6443 check
+cat >> /etc/haproxy/haproxy.cfg <<EOF
+    server kv-master-$i 10.8.8.1$i:6443 check
 EOF
   ((i++))
 done
