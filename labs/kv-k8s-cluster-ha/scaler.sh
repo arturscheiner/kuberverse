@@ -39,7 +39,7 @@ apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completi
 add-apt-repository ppa:vbernat/haproxy-2.0 -y
 apt-get install haproxy -y
 
-cat >> /etc/haproxy.cfg <<EOF
+cat >> /etc/haproxy/haproxy.cfg <<EOF
 frontend kv-scaler
     bind $LB_ADDRESS:6443
     mode tcp
