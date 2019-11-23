@@ -34,40 +34,40 @@ echo "********** $KVMSG"
 echo "********** $KVMSG ->> Installing Required & Recommended Packages"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker
+apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce
 
-#add-apt-repository ppa:vbernat/haproxy-2.0 -y
-#apt-get upgrade haproxy -y
+add-apt-repository ppa:vbernat/haproxy-2.0 -y
+apt-get install haproxy -y
 
-# cat >> /etc/haproxy.cfg <<EOF
-# frontend kv-scaler
-#     bind $LB_ADDRESS:6443
-#     mode tcp
-#     log global
-#     option tcplog
-#     timeout client 3600s
-#     backlog 4096
-#     maxconn 50000
-#     use_backend kv-masters
+cat >> /etc/haproxy.cfg <<EOF
+frontend kv-scaler
+    bind $LB_ADDRESS:6443
+    mode tcp
+    log global
+    option tcplog
+    timeout client 3600s
+    backlog 4096
+    maxconn 50000
+    use_backend kv-masters
 
-# backend kv-masters
-#     mode  tcp
-#     option log-health-checks
-#     option redispatch
-#     option tcplog
-#     balance roundrobin
-#     timeout connect 1s
-#     timeout queue 5s
-#     timeout server 3600s
-# EOF
+backend kv-masters
+    mode  tcp
+    option log-health-checks
+    option redispatch
+    option tcplog
+    balance roundrobin
+    timeout connect 1s
+    timeout queue 5s
+    timeout server 3600s
+EOF
 
-# i=0
-# while [ $i -le $MASTER_COUNT ]
-# do
-# cat >> haproxy.cfg <<EOF
-#         server kv-master-$i 10.8.8.1$i:6443 check
-# EOF
-#   ((i++))
-# done
+i=0
+while [ $i -le $MASTER_COUNT ]
+do
+cat >> haproxy.cfg <<EOF
+        server kv-master-$i 10.8.8.1$i:6443 check
+EOF
+  ((i++))
+done
 
-# systemctl restart haproxy
+systemctl restart haproxy
