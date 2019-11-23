@@ -27,7 +27,7 @@ if (( $NODE == 0 )) ; then
     sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
     kubeadm init --control-plane-endpoint "kv-scaler-0.local:6443" --upload-certs --pod-network-cidr $POD_CIDR 
-    kubeadm reset -y
+    kubeadm reset -f
     ip route del default
     kubeadm init --control-plane-endpoint "kv-scaler-0.local:6443" --upload-certs --pod-network-cidr $POD_CIDR | tee /vagrant/kubeadm-init.out
 
@@ -46,7 +46,7 @@ if (( $NODE == 0 )) ; then
     rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
 else
     $(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
-    kubeadm reset -y
+    kubeadm reset -f
     ip route del default
     $(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
 fi
