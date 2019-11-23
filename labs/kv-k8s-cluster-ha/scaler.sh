@@ -13,6 +13,15 @@ echo "********** $KVMSG"
 ### Install packages to allow apt to use a repository over HTTPS
 apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common haproxy
 
+### Add Docker’s official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+### Add Docker apt repository.
+add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"
+
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 echo "********** $KVMSG ->> Updating Repositories"
