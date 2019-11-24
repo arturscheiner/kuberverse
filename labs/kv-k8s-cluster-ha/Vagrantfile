@@ -27,7 +27,6 @@ MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
 
 def scaler(config)
-  if MASTER_COUNT > 1
 
     config.vm.define "kv-scaler-0" do |ha|
       ha.vm.box = BOX_IMAGE
@@ -44,13 +43,14 @@ def scaler(config)
         SCRIPT
       end
     end
-  end
+
 end
 
 Vagrant.configure("2") do |config|
 
   if MASTER_COUNT > 1
     puts scaler(config)
+  end
 
   (0..MASTER_COUNT-1).each do |i|
 
