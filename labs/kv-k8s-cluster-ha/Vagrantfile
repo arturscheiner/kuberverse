@@ -8,7 +8,7 @@
 
 BOX_IMAGE = "bento/ubuntu-16.04"
 
-MASTER_COUNT = 2
+MASTER_COUNT = 1
 WORKER_COUNT = 1
 
 KV_LAB_NETWORK = "10.8.8.0"
@@ -56,7 +56,7 @@ end
 
 Vagrant.configure("2") do |config|
   p "Initializing Vagrant"
-  if MASTER_COUNT > 1
+  if MASTER_COUNT > 1 do
     createScaler(0,config)
   end
 
