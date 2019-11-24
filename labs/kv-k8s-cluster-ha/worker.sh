@@ -5,9 +5,9 @@
 
 KVMSG=$1
 NODE=$2
-NODE_HOST_IP=20+$NODE
-POD_CIDR=$3
-API_ADV_ADDRESS=$4
+WORKER_IP=$3
+# POD_CIDR=$3
+# API_ADV_ADDRESS=$4
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -17,5 +17,7 @@ echo "********** $KVMSG ->> kv-worker-$NODE"
 
 # Extract and execute the kubeadm join command from the exported file
 #$(cat /vagrant/kubeadm-init.out | grep -A 2 "kubeadm join" | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
+
 $(cat workers-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
-echo KUBELET_EXTRA_ARGS=--node-ip=10.8.8.$NODE_HOST_IP > /etc/default/kubelet
+
+echo KUBELET_EXTRA_ARGS=--node-ip=$WORKER_IP > /etc/default/kubelet

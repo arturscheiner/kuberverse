@@ -5,7 +5,7 @@
 
 KVMSG=$1
 MASTER_COUNT=$2
-LB_ADDRESS=$3
+SCALER_ADDRESS=$3
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -41,7 +41,7 @@ apt-get install haproxy -y
 
 cat >> /etc/haproxy/haproxy.cfg <<EOF
 frontend kv-scaler
-    bind $LB_ADDRESS:6443
+    bind $SCALER_ADDRESS:6443
     mode tcp
     log global
     option tcplog
@@ -62,7 +62,7 @@ backend kv-masters
 EOF
 
 i=0
-while [ $i -le $MASTER_COUNT ]
+while [ $i -le $MASTER_COUNT-1 ]
 do
 cat >> /etc/haproxy/haproxy.cfg <<EOF
     server kv-master-$i 10.8.8.1$i:6443 check

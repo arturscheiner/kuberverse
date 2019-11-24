@@ -6,13 +6,20 @@
 KVMSG=$1
 NODE=$2
 POD_CIDR=$3
-API_ADV_ADDRESS=$4
+SCALER_ADDRESS=$4
 
-    echo "********** $KVMSG"
-    echo "********** $KVMSG"
-    echo "********** $KVMSG ->> Initializing Kubernetes Cluster"
-    echo "********** $KVMSG ->> Master Node $NODE"
-    echo "********** $KVMSG ->> kv-master-$NODE"
+echo "********** $KVMSG"
+echo "********** $KVMSG"
+echo "********** $KVMSG ->> Initializing Kubernetes Cluster"
+echo "********** $KVMSG ->> Master Node $NODE"
+echo "********** $KVMSG ->> kv-master-$NODE"
+
+kubeadm config images pull
+
+cat >> /etc/haproxy/haproxy.cfg <<EOF
+# Added by $KVMSG
+$SCALER_ADDRESS     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+EOF
 
 if (( $NODE == 0 )) ; then
 
@@ -26,10 +33,9 @@ if (( $NODE == 0 )) ; then
     wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
     sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
-    kubeadm init --control-plane-endpoint "kv-scaler-0.local:6443" --upload-certs --pod-network-cidr $POD_CIDR 
-    kubeadm reset -f
     ip route del default
-    kubeadm init --control-plane-endpoint "kv-scaler-0.local:6443" --upload-certs --pod-network-cidr $POD_CIDR | tee /vagrant/kubeadm-init.out
+    ip route add default via 10.8.8.1$NODE
+    kubeadm init --control-plane-endpoint "kv-scaler-0.local:6443" --upload-certs --pod-network-cidr $POD_CIDR --apiserver-advertise-address 10.8.8.1$NODE | tee /vagrant/kubeadm-init.out
 
     k=$(grep -n "kubeadm join scaler" /vagrant/kubeadm-init.out | cut -f1 -d:)
     x=$(echo $x | awk '{print $1}')
@@ -45,7 +51,7 @@ if (( $NODE == 0 )) ; then
     kubectl apply -f /tmp/calico-defined.yaml
     rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
 else
-    $(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
+    #$(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     kubeadm reset -f
     ip route del default
     $(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')

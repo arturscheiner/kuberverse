@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # kuberverse k8s lab provisioner
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
@@ -11,9 +12,13 @@ BOX_IMAGE = "bento/ubuntu-16.04"
 MASTER_COUNT = 2
 WORKER_COUNT = 1
 
+KV_LAB_NETWORK = "10.8.8.0"
 POD_CIDR = "172.18.0.0/16"
-API_ADV_ADDRESS = "10.8.8.10"
-LB_ADDRESS = "10.8.8.6"
+#API_ADV_ADDRESS = "10.8.8.10"
+
+SCALER_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".50"
+
+#SCALER_ADDRESS = "10.8.8.6"
 KVMSG = "Kuberverse"
 
 COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh"
@@ -21,13 +26,13 @@ SCALER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh"
 WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
 
-Vagrant.configure("2") do |config|
-
+def scaler(config)
   if MASTER_COUNT > 1
+
     config.vm.define "kv-scaler-0" do |ha|
       ha.vm.box = BOX_IMAGE
       ha.vm.hostname = "kv-scaler-0"
-      ha.vm.network :private_network, ip: "#{LB_ADDRESS}"
+      ha.vm.network :private_network, ip: SCALER_IP
       ha.vm.network "forwarded_port", guest: 6443, host: 6443
 
       ha.vm.provision "shell" do |s|
@@ -35,17 +40,26 @@ Vagrant.configure("2") do |config|
           mkdir -p /home/vagrant/.kv
           wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
           chmod +x /home/vagrant/.kv/scaler.sh
-          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{LB_ADDRESS}
+          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{SCALER_IP}
         SCRIPT
       end
     end
   end
+end
+
+Vagrant.configure("2") do |config|
+
+  if MASTER_COUNT > 1
+    puts scaler(config)
 
   (0..MASTER_COUNT-1).each do |i|
+
+    NODE_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".#{i + 20}"
+
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-master-#{i}"
-      subconfig.vm.network :private_network, ip: "10.8.8.#{i + 10}"
+      subconfig.vm.network :private_network, ip: NODE_IP
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 2048
@@ -75,10 +89,13 @@ Vagrant.configure("2") do |config|
   end
   
   (0..WORKER_COUNT-1).each do |i|
+
+    WORKER_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".#{i + 20}"
+
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-worker-#{i}"
-      subconfig.vm.network :private_network, ip: "10.8.8.#{i + 20}"
+      subconfig.vm.network :private_network, ip: WORKER_IP
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 1024
@@ -94,7 +111,7 @@ Vagrant.configure("2") do |config|
 
           wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
           chmod +x /home/vagrant/.kv/worker.sh
-          #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{POD_CIDR} #{API_ADV_ADDRESS}
+          #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{WORKER_IP}
         SCRIPT
       end
 
