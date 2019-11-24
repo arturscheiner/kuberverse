@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # kuberverse k8s lab provisioner
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
@@ -37,6 +36,7 @@ def defineIp(type,i,kvln)
 end
 
 def createScaler(i,config)
+    p "Starting Scaler"
     scalerIp = defineIp("scaler",i,KV_LAB_NETWORK)
     config.vm.define "kv-scaler-#{i}" do |ha|    
       ha.vm.box = BOX_IMAGE
@@ -55,7 +55,7 @@ def createScaler(i,config)
 end
 
 Vagrant.configure("2") do |config|
-
+  p "Initializing Vagrant"
   if MASTER_COUNT > 1
     createScaler(0,config)
   end
