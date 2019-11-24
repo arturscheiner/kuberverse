@@ -27,6 +27,16 @@ WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 
 Vagrant.configure("2") do |config|
 
+  def defineIp(type,i,kvln)
+    case type
+    when "master" 
+      return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
+    when "worker"
+      return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
+    when "scaler"
+      return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
+  end
+
   if MASTER_COUNT > 1 then
     # createScaler(0,config)
     i = 0
@@ -119,17 +129,6 @@ Vagrant.configure("2") do |config|
    inline: "swapoff -a"
   end
 
-end
-end
-
-def defineIp(type,i,kvln)
-  case type
-  when "master" 
-    return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
-  when "worker"
-    return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
-  when "scaler"
-    return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
 end
 
 # def createScaler(i,config)
