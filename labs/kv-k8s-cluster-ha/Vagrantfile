@@ -16,7 +16,7 @@ KV_LAB_NETWORK = "10.8.8.0"
 POD_CIDR = "172.18.0.0/16"
 #API_ADV_ADDRESS = "10.8.8.10"
 
-SCALER_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".50"
+#SCALER_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".50"
 
 #SCALER_ADDRESS = "10.8.8.6"
 KVMSG = "Kuberverse"
@@ -26,20 +26,29 @@ SCALER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh"
 WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
 
-def scaler(config)
+def defineIp(type,i,kvln)
+  case type
+  when "master" 
+    kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
+  when "worker"
+    kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
+  when "scaler"
+    kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
+end
 
-    config.vm.define "kv-scaler-0" do |ha|
+def createScaler(config)
+    scalerIp = defineIp("scaler",0,KV_LAB_NETWORK)
+    config.vm.define "kv-scaler-0" do |ha|    
       ha.vm.box = BOX_IMAGE
       ha.vm.hostname = "kv-scaler-0"
-      ha.vm.network :private_network, ip: SCALER_IP
+      ha.vm.network :private_network, ip: scalerIp
       ha.vm.network "forwarded_port", guest: 6443, host: 6443
-
       ha.vm.provision "shell" do |s|
         s.inline = <<-SCRIPT
           mkdir -p /home/vagrant/.kv
           wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
           chmod +x /home/vagrant/.kv/scaler.sh
-          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{SCALER_IP}
+          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
         SCRIPT
       end
     end
@@ -49,17 +58,17 @@ end
 Vagrant.configure("2") do |config|
 
   if MASTER_COUNT > 1
-    puts scaler(config)
+    createScaler(config)
   end
 
   (0..MASTER_COUNT-1).each do |i|
 
-    NODE_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".#{i + 20}"
+    MASTER_IP = master(i)
 
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-master-#{i}"
-      subconfig.vm.network :private_network, ip: NODE_IP
+      subconfig.vm.network :private_network, ip: MASTER_IP
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 2048
