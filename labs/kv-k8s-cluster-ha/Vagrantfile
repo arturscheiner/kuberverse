@@ -57,7 +57,24 @@ end
 Vagrant.configure("2") do |config|
   p "Initializing Vagrant"
   if MASTER_COUNT > 1 then
-    createScaler(0,config)
+    # createScaler(0,config)
+    i = 0
+    p "Starting Scaler"
+    scalerIp = defineIp("scaler",i,KV_LAB_NETWORK)
+    config.vm.define "kv-scaler-#{i}" do |ha|    
+      ha.vm.box = BOX_IMAGE
+      ha.vm.hostname = "kv-scaler-#{i}"
+      ha.vm.network :private_network, ip: scalerIp
+      ha.vm.network "forwarded_port", guest: 6443, host: 6443
+      ha.vm.provision "shell" do |s|
+        s.inline = <<-SCRIPT
+          mkdir -p /home/vagrant/.kv
+          wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
+          chmod +x /home/vagrant/.kv/scaler.sh
+          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
+        SCRIPT
+      end
+    end   
   end
 
   (0..MASTER_COUNT-1).each do |i|
