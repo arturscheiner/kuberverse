@@ -36,11 +36,11 @@ def defineIp(type,i,kvln)
     kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
 end
 
-def createScaler(config)
-    scalerIp = defineIp("scaler",0,KV_LAB_NETWORK)
-    config.vm.define "kv-scaler-0" do |ha|    
+def createScaler(i,config)
+    scalerIp = defineIp("scaler",i,KV_LAB_NETWORK)
+    config.vm.define "kv-scaler-#{i}" do |ha|    
       ha.vm.box = BOX_IMAGE
-      ha.vm.hostname = "kv-scaler-0"
+      ha.vm.hostname = "kv-scaler-#{i}"
       ha.vm.network :private_network, ip: scalerIp
       ha.vm.network "forwarded_port", guest: 6443, host: 6443
       ha.vm.provision "shell" do |s|
@@ -52,13 +52,12 @@ def createScaler(config)
         SCRIPT
       end
     end
-
 end
 
 Vagrant.configure("2") do |config|
 
   if MASTER_COUNT > 1
-    createScaler(config)
+    createScaler(0,config)
   end
 
   (0..MASTER_COUNT-1).each do |i|
