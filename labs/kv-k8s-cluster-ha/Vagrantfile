@@ -131,3 +131,4 @@ Vagrant.configure("2") do |config|
    inline: "swapoff -a"
 
 end
+end
