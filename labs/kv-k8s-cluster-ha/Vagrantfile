@@ -62,12 +62,12 @@ Vagrant.configure("2") do |config|
 
   (0..MASTER_COUNT-1).each do |i|
 
-    MASTER_IP = master(i)
+    masterIp = defineIp("master",i,KV_LAB_NETWORK)
 
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-master-#{i}"
-      subconfig.vm.network :private_network, ip: MASTER_IP
+      subconfig.vm.network :private_network, ip: masterIp
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 2048
@@ -87,7 +87,7 @@ Vagrant.configure("2") do |config|
 
             wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
             chmod +x /home/vagrant/.kv/master.sh
-            # /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{API_ADV_ADDRESS}
+            # /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp}
           SCRIPT
         end
 
@@ -98,12 +98,12 @@ Vagrant.configure("2") do |config|
   
   (0..WORKER_COUNT-1).each do |i|
 
-    WORKER_IP = KV_LAB_NETWORK.split('.')[0..-2].join('.') + ".#{i + 20}"
+    workerIp = defineIp("worker",i,KV_LAB_NETWORK)
 
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "kv-worker-#{i}"
-      subconfig.vm.network :private_network, ip: WORKER_IP
+      subconfig.vm.network :private_network, ip: workerIp
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 1024
@@ -119,7 +119,7 @@ Vagrant.configure("2") do |config|
 
           wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
           chmod +x /home/vagrant/.kv/worker.sh
-          #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{WORKER_IP}
+          #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{workerIp}
         SCRIPT
       end
 
