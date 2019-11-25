@@ -34,18 +34,12 @@ else
         #$(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
         kubeadm reset -f
         ip route del default
+        ip route add default via $MASTER_IP
         $(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     fi
 
 fi
 
-
-
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Configuring Kubernetes Cluster Environment"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
 mkdir -p /home/vagrant/.kube
 cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
 chown vagrant:vagrant /home/vagrant/.kube/config
