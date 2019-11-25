@@ -77,7 +77,7 @@ class KvLab
             mkdir -p /home/vagrant/.kv
             wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
             chmod +x /home/vagrant/.kv/scaler.sh
-            /home/vagrant/.kv/scaler.sh #{KVMSG} #{masterIps} #{scalerIp}
+            /home/vagrant/.kv/scaler.sh #{KVMSG} #{scalerIp} #{masterIps}
           SCRIPT
         end
       end
