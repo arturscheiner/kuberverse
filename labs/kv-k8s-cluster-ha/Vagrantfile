@@ -64,55 +64,42 @@ class KvLab
       end
   end
 
-end
+  def createMasterSingle(config)
 
-Vagrant.configure("2") do |config|
-
-  kvlab = KvLab.new()
-
-  if MASTER_COUNT > 1 then
-    kvlab.createScaler(0,config) 
   end
 
-  (0..MASTER_COUNT-1).each do |i|
+  def createMasterHA(i,config)
+    
+    masterIp = self.defineIp("master",i,KV_LAB_NETWORK)
 
-    masterIp = kvlab.defineIp("master",i,KV_LAB_NETWORK)
-
-    config.vm.define "kv-master-#{i}" do |subconfig|
-      subconfig.vm.box = BOX_IMAGE
-      subconfig.vm.hostname = "kv-master-#{i}"
-      subconfig.vm.network :private_network, ip: masterIp
-      subconfig.vm.provider :virtualbox do |vb|
+    config.vm.define "kv-master-#{i}" do |master|
+      master.vm.box = BOX_IMAGE
+      master.vm.hostname = "kv-master-#{i}"
+      master.vm.network :private_network, ip: masterIp
+      master.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--cpus", 2]
         vb.memory = 2048
       end
 
-      # This if is here just to remember me to create a multi-master cluster
-      # the behavior and overal configuration is different and this will require a HAProxy installation
-      #if i == 0
+      master.vm.provision "shell" do |s|
+        s.inline = <<-SCRIPT
+          mkdir -p /home/vagrant/.kv
 
-        subconfig.vm.provision "shell" do |s|
-          s.inline = <<-SCRIPT
-            mkdir -p /home/vagrant/.kv
+          wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+          chmod +x /home/vagrant/.kv/common.sh
+          /home/vagrant/.kv/common.sh #{KVMSG}
 
-            wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            chmod +x /home/vagrant/.kv/common.sh
-            /home/vagrant/.kv/common.sh #{KVMSG}
-
-            wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
-            chmod +x /home/vagrant/.kv/master.sh
-            # /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp}
-          SCRIPT
-        end
-
-      #end
-
-    end
+          wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
+          chmod +x /home/vagrant/.kv/master.sh
+          # /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp}
+        SCRIPT
+      end
+    end   
   end
-  
-  (0..WORKER_COUNT-1).each do |i|
 
-    workerIp = kvlab.defineIp("worker",i,KV_LAB_NETWORK)
+  def createWorker(i,config)
+
+    workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
 
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
@@ -138,6 +125,28 @@ Vagrant.configure("2") do |config|
       end
 
     end
+  end
+
+end
+
+Vagrant.configure("2") do |config|
+
+  kvlab = KvLab.new()
+
+  if MASTER_COUNT > 1
+
+    kvlab.createScaler(0,config) 
+
+    (0..MASTER_COUNT-1).each do |i|
+      kvlab.createMasterHA(i,config)
+    end
+
+  else
+    kvlab.createMasterSingle(config)
+  end
+
+  (0..WORKER_COUNT-1).each do |i|
+    kvlab.createWorker(i,config)
   end
 
   config.vm.provision "shell",
