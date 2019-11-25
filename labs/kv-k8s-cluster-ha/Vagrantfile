@@ -58,6 +58,14 @@ class KvLab
 
       p "Creating Scaler #{i} with Ip #{scalerIp}"
 
+      masterIps = Array[]
+
+      (0..MASTER_COUNT-1).each do |m|
+        masterIps.push(self.defineIp("master",m,KV_LAB_NETWORK))
+      end
+
+      p masterIps.length
+
       config.vm.define "kv-scaler-#{i}" do |scaler|    
         scaler.vm.box = BOX_IMAGE
         scaler.vm.hostname = "kv-scaler-#{i}"
@@ -68,7 +76,7 @@ class KvLab
             mkdir -p /home/vagrant/.kv
             wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
             chmod +x /home/vagrant/.kv/scaler.sh
-            /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
+            /home/vagrant/.kv/scaler.sh #{KVMSG} #{masterIps} #{scalerIp}
           SCRIPT
         end
       end
