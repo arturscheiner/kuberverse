@@ -11,6 +11,10 @@ BOX_IMAGE = "bento/ubuntu-16.04"
 MASTER_COUNT = 2
 WORKER_COUNT = 1
 
+SCALER_MEMORY = 512
+MASTER_MEMORY = 1024
+WORKER_MEMORY = 1024
+
 KV_LAB_NETWORK = "10.8.8.0"
 POD_CIDR = "172.18.0.0/16"
 #API_ADV_ADDRESS = "10.8.8.10" - sem uso
@@ -82,7 +86,7 @@ class KvLab
         master.vm.network :private_network, ip: masterIp
         master.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--cpus", 2]
-          vb.memory = 2048
+          vb.memory = MASTER_MEMORY
         end
   
         master.vm.provision "shell" do |s|
@@ -113,7 +117,7 @@ class KvLab
         worker.vm.network :private_network, ip: workerIp
         worker.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--cpus", 2]
-          vb.memory = 1024
+          vb.memory = WORKER_MEMORY
         end
   
         worker.vm.provision "shell" do |s|
