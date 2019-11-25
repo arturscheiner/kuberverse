@@ -1,37 +1,145 @@
+# kuberverse k8s lab provisioner
+# type: kubeadm-calico-full-cluster-bootstrap
+# created by Artur Scheiner - artur.scheiner@gmail.com
+# dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh
+#               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh
+
+BOX_IMAGE = "bento/ubuntu-16.04"
+
+MASTER_COUNT = 2
+WORKER_COUNT = 1
+
+KV_LAB_NETWORK = "10.8.8.0"
+POD_CIDR = "172.18.0.0/16"
+#API_ADV_ADDRESS = "10.8.8.10"
+
+KVMSG = "Kuberverse"
+
+COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh"
+SCALER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh"
+MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh"
+WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
+
+
 class KvLab
 
-    def initialize
-        puts "teste"
-    end
+  def initialize
+      puts "teste"
+  end
 
-    def defineIp(type,i,kvln)
-        case type
-        when "master" 
-          return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
-        when "worker"
-          return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
-        when "scaler"
-          return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
+  def defineIp(type,i,kvln)
+      case type
+      when "master" 
+        return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
+      when "worker"
+        return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
+      when "scaler"
+        return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
+      end
+  end
+  
+  def createScaler(config)
+      p MASTER_COUNT == 1 ? "single" : "multi"
+      p "Starting Scaler"
+
+      i = 0
+      scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
+
+      config.vm.define "kv-scaler-#{i}" do |scaler|    
+        scaler.vm.box = BOX_IMAGE
+        scaler.vm.hostname = "kv-scaler-#{i}"
+        scaler.vm.network :private_network, ip: scalerIp
+        scaler.vm.network "forwarded_port", guest: 6443, host: 6443
+        scaler.vm.provision "shell" do |s|
+          s.inline = <<-SCRIPT
+            mkdir -p /home/vagrant/.kv
+            wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
+            chmod +x /home/vagrant/.kv/scaler.sh
+            /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
+          SCRIPT
         end
-    end
-    
-    def createScaler(i,config)
-        p "Starting Scaler"
-        scalerIp = defineIp("scaler",i,KV_LAB_NETWORK)
-        config.vm.define "kv-scaler-#{i}" do |ha|    
-          ha.vm.box = BOX_IMAGE
-          ha.vm.hostname = "kv-scaler-#{i}"
-          ha.vm.network :private_network, ip: scalerIp
-          ha.vm.network "forwarded_port", guest: 6443, host: 6443
-          ha.vm.provision "shell" do |s|
-            s.inline = <<-SCRIPT
-              mkdir -p /home/vagrant/.kv
-              wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
-              chmod +x /home/vagrant/.kv/scaler.sh
-              /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
-            SCRIPT
-          end
+      end
+  end
+
+  def createMaster(config)
+   
+    (0..MASTER_COUNT-1).each do |i|
+      masterIp = self.defineIp("master",i,KV_LAB_NETWORK)
+
+      config.vm.define "kv-master-#{i}" do |master|
+        master.vm.box = BOX_IMAGE
+        master.vm.hostname = "kv-master-#{i}"
+        master.vm.network :private_network, ip: masterIp
+        master.vm.provider :virtualbox do |vb|
+          vb.customize ["modifyvm", :id, "--cpus", 2]
+          vb.memory = 2048
         end
+  
+        master.vm.provision "shell" do |s|
+          s.inline = <<-SCRIPT
+            mkdir -p /home/vagrant/.kv
+  
+            wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+            chmod +x /home/vagrant/.kv/common.sh
+            /home/vagrant/.kv/common.sh #{KVMSG}
+  
+            wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
+            chmod +x /home/vagrant/.kv/master.sh
+            /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+          SCRIPT
+        end
+      end
+    end   
+  end
+
+  def createWorker(config)
+    (0..WORKER_COUNT-1).each do |i|
+      workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
+
+      config.vm.define "kv-worker-#{i}" do |worker|
+        worker.vm.box = BOX_IMAGE
+        worker.vm.hostname = "kv-worker-#{i}"
+        worker.vm.network :private_network, ip: workerIp
+        worker.vm.provider :virtualbox do |vb|
+          vb.customize ["modifyvm", :id, "--cpus", 2]
+          vb.memory = 1024
+        end
+  
+        worker.vm.provision "shell" do |s|
+          s.inline = <<-SCRIPT
+            mkdir -p /home/vagrant/.kv
+  
+            wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+            chmod +x /home/vagrant/.kv/common.sh
+            /home/vagrant/.kv/common.sh #{KVMSG}
+  
+            wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
+            chmod +x /home/vagrant/.kv/worker.sh
+            #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{workerIp}
+          SCRIPT
+        end
+      end
     end
+  end
+
+end
+
+Vagrant.configure("2") do |config|
+
+  kvlab = KvLab.new()
+
+  if MASTER_COUNT == 1
+    kvlab.createScaler(config)
+  end
+
+  kvlab.createMaster(config)
+  kvlab.createWorker(config)
+
+
+  config.vm.provision "shell",
+   run: "always",
+   inline: "swapoff -a"
 
 end

@@ -120,10 +120,8 @@ class KvLab
             #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{workerIp}
           SCRIPT
         end
-  
       end
     end
-
   end
 
 end
@@ -132,7 +130,9 @@ Vagrant.configure("2") do |config|
 
   kvlab = KvLab.new()
 
-  MASTER_COUNT == 1 ? kvlab.createScaler(config) : next
+  if MASTER_COUNT == 1
+    kvlab.createScaler(config)
+  end
 
   kvlab.createMaster(config)
   kvlab.createWorker(config)
