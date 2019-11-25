@@ -4,11 +4,12 @@
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 KVMSG=$1
-MASTER_IPS=$2
-SCALER_ADDRESS=$3
+SCALER_IP=$2
+MASTER_IPS=$3
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
+
 echo "$MASTER_IPS"
 echo "$SCALER_ADDRESS"
 ### Install packages to allow apt to use a repository over HTTPS
