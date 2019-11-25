@@ -8,7 +8,7 @@
 
 BOX_IMAGE = "bento/ubuntu-16.04"
 
-MASTER_COUNT = 1
+MASTER_COUNT = 2
 WORKER_COUNT = 1
 
 KV_LAB_NETWORK = "10.8.8.0"
@@ -26,62 +26,57 @@ MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
 
 
-def defineIp(type,i,kvln)
-  case type
-  when "master" 
-    return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
-  when "worker"
-    return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
-  when "scaler"
-    return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
-  end
-end
+class KvLab
 
-def createScaler(i,config)
-    p "Starting Scaler"
-    scalerIp = defineIp("scaler",i,KV_LAB_NETWORK)
-    config.vm.define "kv-scaler-#{i}" do |ha|    
-      ha.vm.box = BOX_IMAGE
-      ha.vm.hostname = "kv-scaler-#{i}"
-      ha.vm.network :private_network, ip: scalerIp
-      ha.vm.network "forwarded_port", guest: 6443, host: 6443
-      ha.vm.provision "shell" do |s|
-        s.inline = <<-SCRIPT
-          mkdir -p /home/vagrant/.kv
-          wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
-          chmod +x /home/vagrant/.kv/scaler.sh
-          /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
-        SCRIPT
+  def initialize
+      puts "teste"
+  end
+
+  def defineIp(type,i,kvln)
+      case type
+      when "master" 
+        return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
+      when "worker"
+        return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
+      when "scaler"
+        return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
       end
-    end
+  end
+  
+  def createScaler(i,config)
+      p "Starting Scaler"
+      
+      scalerIp = self.class.defineIp("scaler",i,KV_LAB_NETWORK)
+
+      config.vm.define "kv-scaler-#{i}" do |ha|    
+        ha.vm.box = BOX_IMAGE
+        ha.vm.hostname = "kv-scaler-#{i}"
+        ha.vm.network :private_network, ip: scalerIp
+        ha.vm.network "forwarded_port", guest: 6443, host: 6443
+        ha.vm.provision "shell" do |s|
+          s.inline = <<-SCRIPT
+            mkdir -p /home/vagrant/.kv
+            wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
+            chmod +x /home/vagrant/.kv/scaler.sh
+            /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
+          SCRIPT
+        end
+      end
+  end
+
 end
 
 Vagrant.configure("2") do |config|
 
+  kvlab = KvLab.New()
+
   if MASTER_COUNT > 1 then
-    createScaler(0,config)
-    # i = 0
-    # p "Starting Scaler"
-    # scalerIp = defineIp("scaler",i,KV_LAB_NETWORK)
-    # config.vm.define "kv-scaler-#{i}" do |ha|    
-    #   ha.vm.box = BOX_IMAGE
-    #   ha.vm.hostname = "kv-scaler-#{i}"
-    #   ha.vm.network :private_network, ip: scalerIp
-    #   ha.vm.network "forwarded_port", guest: 6443, host: 6443
-    #   ha.vm.provision "shell" do |s|
-    #     s.inline = <<-SCRIPT
-    #       mkdir -p /home/vagrant/.kv
-    #       wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
-    #       chmod +x /home/vagrant/.kv/scaler.sh
-    #       /home/vagrant/.kv/scaler.sh #{KVMSG} #{MASTER_COUNT} #{scalerIp}
-    #     SCRIPT
-    #   end
-    # end   
+    kvlab.createScaler(0,config) 
   end
 
   (0..MASTER_COUNT-1).each do |i|
 
-    masterIp = defineIp("master",i,KV_LAB_NETWORK)
+    masterIp = kvlab.defineIp("master",i,KV_LAB_NETWORK)
 
     config.vm.define "kv-master-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
