@@ -13,7 +13,9 @@ wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calic
 sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
 if [ $MASTER_TYPE = "single" ]
+
     kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP | tee /vagrant/kubeadm-init.out
+
 else
 
     if (( $NODE == 0 )) ; then
