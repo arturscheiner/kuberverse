@@ -5,7 +5,7 @@
 
 KVMSG=$1
 SCALER_IP=$2
-MASTER_IPS=$(echo $3 | | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
+MASTER_IPS=$(echo $3 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
