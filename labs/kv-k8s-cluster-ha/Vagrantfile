@@ -41,7 +41,7 @@ class KvLab
   end
   
   def createScaler(config)
-      p "#{MASTER_COUNT = 1 ? "single" : "multi"}"
+      p MASTER_COUNT == 1 ? "single" : "multi"
       p "Starting Scaler"
 
       i = 0
@@ -87,7 +87,7 @@ class KvLab
   
             wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
             chmod +x /home/vagrant/.kv/master.sh
-            /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT = 1 ? "single" : "multi"}
+            /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
           SCRIPT
         end
       end
@@ -132,7 +132,7 @@ Vagrant.configure("2") do |config|
 
   kvlab = KvLab.new()
 
-  if MASTER_COUNT = 1 ? kvlab.createScaler(config)
+  MASTER_COUNT == 1 ? kvlab.createScaler(config) : next
 
   kvlab.createMaster(config)
   kvlab.createWorker(config)
