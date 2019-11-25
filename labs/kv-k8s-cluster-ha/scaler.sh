@@ -5,7 +5,7 @@
 
 KVMSG=$1
 SCALER_IP=$2
-MASTER_IPS=$3
+MASTER_IPS=$(echo $3 | | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -25,6 +25,8 @@ add-apt-repository \
   $(lsb_release -cs) \
   stable"
 
+add-apt-repository ppa:vbernat/haproxy-2.0 -y
+
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 echo "********** $KVMSG ->> Updating Repositories"
@@ -37,10 +39,10 @@ echo "********** $KVMSG"
 echo "********** $KVMSG ->> Installing Required & Recommended Packages"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce
+apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproy ruby docker-ce
 
-add-apt-repository ppa:vbernat/haproxy-2.0 -y
-apt-get install haproxy -y
+
+#apt-get install haproxy -y
 
 cat >> /etc/haproxy/haproxy.cfg <<EOF
 frontend kv-scaler
@@ -65,17 +67,25 @@ backend kv-masters
 EOF
 
 i=0
-while [ $i -le $MASTER_COUNT-1 ]
-do
-cat >> /etc/haproxy/haproxy.cfg <<EOF
-    server kv-master-$i 10.8.8.1$i:6443 check
-EOF
+for mips in $MASTER_IPS; do
+  echo "server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
   ((i++))
 done
 
-cat >> /etc/hosts >> /vagrant/hosts.out<<EOF
+# i=0
+# while [ $i -le $MASTER_COUNT-1 ]
+# do
+# cat >> /etc/haproxy/haproxy.cfg <<EOF
+#     server kv-master-$i 10.8.8.1$i:6443 check
+# EOF
+#   ((i++))
+# done
+
+cat >> /vagrant/hosts.out<<EOF
 # Added by $KVMSG
 $SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
 EOF
+
+cat /vagrant/hosts.out >> /etc/hosts
 
 systemctl restart haproxy
