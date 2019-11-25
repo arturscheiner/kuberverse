@@ -4,7 +4,7 @@
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 KVMSG=$1
-MASTER_COUNT=$2
+MASTER_IPS=$2
 SCALER_ADDRESS=$3
 
 echo "********** $KVMSG"

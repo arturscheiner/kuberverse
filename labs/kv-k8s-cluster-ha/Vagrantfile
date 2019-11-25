@@ -65,6 +65,7 @@ class KvLab
       end
 
       p masterIps.length
+      masterIps.each {|s| p s}
 
       config.vm.define "kv-scaler-#{i}" do |scaler|    
         scaler.vm.box = BOX_IMAGE
