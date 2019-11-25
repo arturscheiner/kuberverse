@@ -56,7 +56,7 @@ class KvLab
       i = 0
       scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
 
-      p "Creating Scaler #{i} with ip #{scalerIp}"
+      p "Creating Scaler #{i} with Ip #{scalerIp}"
 
       config.vm.define "kv-scaler-#{i}" do |scaler|    
         scaler.vm.box = BOX_IMAGE
@@ -79,7 +79,7 @@ class KvLab
     (0..MASTER_COUNT-1).each do |i|
       masterIp = self.defineIp("master",i,KV_LAB_NETWORK)
 
-      p "Creating Master #{i} with ip #{masterIp}"
+      p "Creating Master #{i} with Ip #{masterIp}"
       config.vm.define "kv-master-#{i}" do |master|
         master.vm.box = BOX_IMAGE
         master.vm.hostname = "kv-master-#{i}"
@@ -110,7 +110,7 @@ class KvLab
     (0..WORKER_COUNT-1).each do |i|
       workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
 
-      p "Creating Scaler #{i} with ip #{workerIp}"
+      p "Creating Scaler #{i} with Ip #{workerIp}"
       config.vm.define "kv-worker-#{i}" do |worker|
         worker.vm.box = BOX_IMAGE
         worker.vm.hostname = "kv-worker-#{i}"
