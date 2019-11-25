@@ -42,7 +42,7 @@ echo "********** $KVMSG"
 echo "********** $KVMSG ->> Installing Required & Recommended Packages"
 echo "********** $KVMSG"
 echo "********** $KVMSG"
-apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion docker-ce=5:18.09.1~3-0~ubuntu-xenial kubeadm kubelet kubectl
+apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion ruby docker-ce=5:18.09.1~3-0~ubuntu-xenial kubeadm kubelet kubectl
 
 # Setup Docker daemon.
 cat > /etc/docker/daemon.json <<EOF
@@ -62,7 +62,6 @@ mkdir -p /etc/systemd/system/docker.service.d
 systemctl daemon-reload
 systemctl restart docker
 
-cat >> /etc/haproxy/haproxy.cfg <<EOF
-# Added by $KVMSG
-$SCALER_ADDRESS     kv-scaler.lab.local     kv-scaler.local     kv-scaler
-EOF
+kubeadm config images pull
+
+cat /vagrant/hosts.out >> /etc/hosts
