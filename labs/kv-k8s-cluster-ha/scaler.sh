@@ -68,18 +68,9 @@ EOF
 
 i=0
 for mips in $MASTER_IPS; do
-  echo "server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
+  echo "  server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
   ((i++))
 done
-
-# i=0
-# while [ $i -le $MASTER_COUNT-1 ]
-# do
-# cat >> /etc/haproxy/haproxy.cfg <<EOF
-#     server kv-master-$i 10.8.8.1$i:6443 check
-# EOF
-#   ((i++))
-# done
 
 cat > /vagrant/hosts.out<<EOF
 # Added by $KVMSG
