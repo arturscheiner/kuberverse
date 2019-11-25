@@ -46,7 +46,7 @@ class KvLab
   def createScaler(i,config)
       p "Starting Scaler"
 
-      scalerIp = self.class.defineIp("scaler",i,KV_LAB_NETWORK)
+      scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
 
       config.vm.define "kv-scaler-#{i}" do |ha|    
         ha.vm.box = BOX_IMAGE
@@ -112,7 +112,7 @@ Vagrant.configure("2") do |config|
   
   (0..WORKER_COUNT-1).each do |i|
 
-    workerIp = defineIp("worker",i,KV_LAB_NETWORK)
+    workerIp = kvlab.defineIp("worker",i,KV_LAB_NETWORK)
 
     config.vm.define "kv-worker-#{i}" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
