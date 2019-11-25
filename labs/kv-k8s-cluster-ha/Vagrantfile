@@ -13,7 +13,7 @@ WORKER_COUNT = 1
 
 KV_LAB_NETWORK = "10.8.8.0"
 POD_CIDR = "172.18.0.0/16"
-#API_ADV_ADDRESS = "10.8.8.10"
+#API_ADV_ADDRESS = "10.8.8.10" - sem uso
 
 KVMSG = "Kuberverse"
 
