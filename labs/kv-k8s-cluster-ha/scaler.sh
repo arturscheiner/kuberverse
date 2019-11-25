@@ -10,8 +10,9 @@ MASTER_IPS=$3
 echo "********** $KVMSG"
 echo "********** $KVMSG"
 
-echo "$MASTER_IPS"
-echo "$SCALER_ADDRESS"
+echo "********** $SCALER_IP"
+echo "********** $MASTER_IPS"
+
 ### Install packages to allow apt to use a repository over HTTPS
 apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common haproxy
 
@@ -43,7 +44,7 @@ apt-get install haproxy -y
 
 cat >> /etc/haproxy/haproxy.cfg <<EOF
 frontend kv-scaler
-    bind $SCALER_ADDRESS:6443
+    bind $SCALER_IP:6443
     mode tcp
     log global
     option tcplog
@@ -74,7 +75,7 @@ done
 
 cat >> /etc/hosts >> /vagrant/hosts.out<<EOF
 # Added by $KVMSG
-$SCALER_ADDRESS     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
 EOF
 
 systemctl restart haproxy
