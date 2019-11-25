@@ -41,7 +41,7 @@ class KvLab
   end
   
   def createScaler(config)
-      MASTER_COUNT > 1 ? "HA Cluster -> Starting Scaler Creation" : "SM Cluster -> Bypassing Scaler Creation"
+      p MASTER_COUNT > 1 ? "HA Cluster -> Starting Scaler Creation" : "SM Cluster -> Bypassing Scaler Creation"
 
       i = 0
       scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
