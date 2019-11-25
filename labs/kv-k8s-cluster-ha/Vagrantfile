@@ -45,7 +45,7 @@ class KvLab
   
   def createScaler(i,config)
       p "Starting Scaler"
-      
+
       scalerIp = self.class.defineIp("scaler",i,KV_LAB_NETWORK)
 
       config.vm.define "kv-scaler-#{i}" do |ha|    
@@ -68,7 +68,7 @@ end
 
 Vagrant.configure("2") do |config|
 
-  kvlab = KvLab.New()
+  kvlab = KvLab.new()
 
   if MASTER_COUNT > 1 then
     kvlab.createScaler(0,config) 
