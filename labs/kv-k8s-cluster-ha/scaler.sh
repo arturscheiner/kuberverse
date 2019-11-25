@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# kuberverse k8s lab provisioner
+# kuberverse k8s lab provisioner scaler
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
