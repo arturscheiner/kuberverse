@@ -70,4 +70,9 @@ EOF
   ((i++))
 done
 
+cat >> /etc/hosts >> /vagrant/hosts.out<<EOF
+# Added by $KVMSG
+$SCALER_ADDRESS     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+EOF
+
 systemctl restart haproxy

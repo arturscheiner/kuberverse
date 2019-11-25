@@ -7,6 +7,8 @@ KVMSG=$1
 NODE=$2
 POD_CIDR=$3
 SCALER_ADDRESS=$4
+MASTER_IP=$4
+MASTER_TYPE=$5
 
 echo "********** $KVMSG"
 echo "********** $KVMSG"
@@ -16,10 +18,7 @@ echo "********** $KVMSG ->> kv-master-$NODE"
 
 kubeadm config images pull
 
-cat >> /etc/haproxy/haproxy.cfg <<EOF
-# Added by $KVMSG
-$SCALER_ADDRESS     kv-scaler.lab.local     kv-scaler.local     kv-scaler
-EOF
+cat /vagrant/hosts.out >> /etc/hosts
 
 if (( $NODE == 0 )) ; then
 

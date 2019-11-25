@@ -61,3 +61,8 @@ mkdir -p /etc/systemd/system/docker.service.d
 # Restart docker.
 systemctl daemon-reload
 systemctl restart docker
+
+cat >> /etc/haproxy/haproxy.cfg <<EOF
+# Added by $KVMSG
+$SCALER_ADDRESS     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+EOF
