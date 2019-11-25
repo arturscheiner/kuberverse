@@ -47,12 +47,12 @@ class KvLab
       i = 0
       scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
 
-      config.vm.define "kv-scaler-#{i}" do |ha|    
-        ha.vm.box = BOX_IMAGE
-        ha.vm.hostname = "kv-scaler-#{i}"
-        ha.vm.network :private_network, ip: scalerIp
-        ha.vm.network "forwarded_port", guest: 6443, host: 6443
-        ha.vm.provision "shell" do |s|
+      config.vm.define "kv-scaler-#{i}" do |scaler|    
+        scaler.vm.box = BOX_IMAGE
+        scaler.vm.hostname = "kv-scaler-#{i}"
+        scaler.vm.network :private_network, ip: scalerIp
+        scaler.vm.network "forwarded_port", guest: 6443, host: 6443
+        scaler.vm.provision "shell" do |s|
           s.inline = <<-SCRIPT
             mkdir -p /home/vagrant/.kv
             wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
@@ -98,16 +98,16 @@ class KvLab
     (0..WORKER_COUNT-1).each do |i|
       workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
 
-      config.vm.define "kv-worker-#{i}" do |subconfig|
-        subconfig.vm.box = BOX_IMAGE
-        subconfig.vm.hostname = "kv-worker-#{i}"
-        subconfig.vm.network :private_network, ip: workerIp
-        subconfig.vm.provider :virtualbox do |vb|
+      config.vm.define "kv-worker-#{i}" do |worker|
+        worker.vm.box = BOX_IMAGE
+        worker.vm.hostname = "kv-worker-#{i}"
+        worker.vm.network :private_network, ip: workerIp
+        worker.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--cpus", 2]
           vb.memory = 1024
         end
   
-        subconfig.vm.provision "shell" do |s|
+        worker.vm.provision "shell" do |s|
           s.inline = <<-SCRIPT
             mkdir -p /home/vagrant/.kv
   
