@@ -29,7 +29,6 @@ else
         awk -v ln=$x 'NR>=ln && NR<=ln+2' /vagrant/kubeadm-init.out | tee /vagrant/masters-join.out
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
 
-        kubectl apply -f /tmp/calico-defined.yaml
     else
         #$(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
         kubeadm reset -f
@@ -46,6 +45,9 @@ chown vagrant:vagrant /home/vagrant/.kube/config
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
+if (( $NODE == 0 )) ; then
+    kubectl apply -f /tmp/calico-defined.yaml
+fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
 systemctl restart networking
