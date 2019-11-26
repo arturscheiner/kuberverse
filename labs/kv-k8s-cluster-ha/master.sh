@@ -31,10 +31,10 @@ else
 
     else
         #$(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
-        kubeadm reset -f
+        #kubeadm reset -f
         ip route del default
         ip route add default via $MASTER_IP
-        $(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
+        $(cat /vagrant/masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     fi
 
 fi
