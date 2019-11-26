@@ -24,11 +24,12 @@ else
         ip route add default via $MASTER_IP
         kubeadm init --control-plane-endpoint "kv-scaler.lab.local:6443" --upload-certs --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP | tee /vagrant/kubeadm-init.out
 
-        k=$(grep -n "kubeadm join kv-scaler" /vagrant/kubeadm-init.out | cut -f1 -d:)
+        k=$(grep -n "kubeadm join kv-scaler.lab.local" /vagrant/kubeadm-init.out | cut -f1 -d:)
         x=$(echo $x | awk '{print $1}')
         awk -v ln=$x 'NR>=ln && NR<=ln+2' /vagrant/kubeadm-init.out | tee /vagrant/masters-join.out
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
 
+        kubectl apply -f /tmp/calico-defined.yaml
     else
         #$(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
         kubeadm reset -f
@@ -48,6 +49,4 @@ cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
 systemctl restart networking
-
-kubectl apply -f /tmp/calico-defined.yaml
 #rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
