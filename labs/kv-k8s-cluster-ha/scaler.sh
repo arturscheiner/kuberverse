@@ -92,6 +92,7 @@ EOF
 
 cd /etc/kuberverse/kv-scaler
 docker build -t kv-scaler .
+docker run -d --name kv-scaler kv-scaler:latest
 
 cat > /etc/systemd/system/kv-scaler-docker.service<<EOF
 [Unit]
