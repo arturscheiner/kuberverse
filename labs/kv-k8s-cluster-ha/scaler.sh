@@ -81,7 +81,17 @@ cat /vagrant/hosts.out >> /etc/hosts
 
 systemctl restart haproxy
 
-docker run -p 8080:8080 --rm --name kv-scaler haproxy:latest haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+
+mkdir -p /etc/kuberverse/kv-scaler
+cp -i /etc/haproxy/haproxy.cfg /etc/kuberverse/kv-scaler/haproxy.cfg
+
+cat > /etc/kuberverse/kv-scaler/Dockerfile<<EOF
+FROM haproxy:1.7
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+EOF
+
+cd /etc/kuberverse/kv-scaler
+docker build -t kv-scaler .
 
 cat > /etc/systemd/system/kv-scaler-docker.service<<EOF
 [Unit]
