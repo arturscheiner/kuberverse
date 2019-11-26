@@ -12,7 +12,7 @@ MASTER_TYPE=$5
 wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
 sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
-if [ $MASTER_TYPE = "single" ]
+if [ $MASTER_TYPE = "single" ]; then
 
     kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP | tee /vagrant/kubeadm-init.out
 
