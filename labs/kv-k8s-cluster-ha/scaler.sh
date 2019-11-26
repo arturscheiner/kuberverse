@@ -80,3 +80,24 @@ EOF
 cat /vagrant/hosts.out >> /etc/hosts
 
 systemctl restart haproxy
+
+docker run -p 8080:8080 --rm --name kv-scaler haproxy:latest haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+
+cat > /etc/systemd/system/kv-scaler-docker.service<<EOF
+[Unit]
+Description=DokuWiki Container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a kv-scaler
+ExecStop=/usr/bin/docker stop -t 2 kv-scaler
+
+[Install]
+WantedBy=local.target
+EOF
+
+systemctl daemon-reload
+systemctl start kv-scaler-docker.service
+systemctl enable kv-scaler-docker.service
