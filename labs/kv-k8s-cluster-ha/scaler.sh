@@ -45,6 +45,15 @@ apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completi
 #apt-get install haproxy -y
 
 cat >> /etc/haproxy/haproxy.cfg <<EOF
+global
+    #debug                          # uncomment to enable debug mode for HAProxy
+
+defaults
+    mode http                                # enable http mode which gives of layer 7 filtering
+    timeout connect 5000ms                   # max time to wait for a connection attempt to a server to succeed
+    timeout client 50000ms                   # max inactivity time on the client side
+    timeout server 50000ms                   # max inactivity time on the server side
+
 frontend kv-scaler
     bind $SCALER_IP:6443
     mode tcp
@@ -68,7 +77,7 @@ EOF
 
 i=0
 for mips in $MASTER_IPS; do
-  echo "  server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
+  echo "    server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
   ((i++))
 done
 
