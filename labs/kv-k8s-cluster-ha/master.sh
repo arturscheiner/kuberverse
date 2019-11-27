@@ -16,6 +16,10 @@ if [ $MASTER_TYPE = "single" ]; then
 
     kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP | tee /vagrant/kubeadm-init.out
 
+    k=$(grep -n "kubeadm join kv-scaler.lab.local" /vagrant/kubeadm-init.out | cut -f1 -d:)
+    x=$(echo $k | awk '{print $1}')
+    awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
+    
 else
 
     if (( $NODE == 0 )) ; then
