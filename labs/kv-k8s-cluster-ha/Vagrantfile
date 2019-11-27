@@ -139,7 +139,7 @@ class KvLab
   
             wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
             chmod +x /home/vagrant/.kv/worker.sh
-            #/home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+            /home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
           SCRIPT
         end
       end
