@@ -8,16 +8,27 @@
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh
 
+# Is not recommended, but you can change the base box.
+# This means that all the VMs will use the same image.
 BOX_IMAGE = "bento/ubuntu-16.04"
 
+# Change these values if you wish to play with the 
+# cluster size. Do this before starting your cluster
+# provisioning.
 MASTER_COUNT = 2
 WORKER_COUNT = 2
 
+# Change these values if you wish to play with the 
+# VMs memory resources. 
 SCALER_MEMORY = 512
 MASTER_MEMORY = 1024
 WORKER_MEMORY = 1024
 
+# Change these values if you wish to play with the
+# networking settings of your cluster 
 KV_LAB_NETWORK = "10.8.8.0"
+
+# This value changes the intra-pod network
 POD_CIDR = "172.18.0.0/16"
 
 
