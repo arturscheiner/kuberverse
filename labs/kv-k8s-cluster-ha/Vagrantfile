@@ -11,7 +11,7 @@
 BOX_IMAGE = "bento/ubuntu-16.04"
 
 MASTER_COUNT = 2
-WORKER_COUNT = 1
+WORKER_COUNT = 2
 
 SCALER_MEMORY = 512
 MASTER_MEMORY = 1024
@@ -79,6 +79,12 @@ class KvLab
         scaler.vm.hostname = "kv-scaler-#{i}"
         scaler.vm.network :private_network, ip: scalerIp
         scaler.vm.network "forwarded_port", guest: 6443, host: 6443
+
+        scaler.vm.provider :virtualbox do |vb|
+          vb.customize ["modifyvm", :id, "--cpus", 2]
+          vb.memory = SCALER_MEMORY
+        end
+
         scaler.vm.provision "shell" do |s|
           s.inline = <<-SCRIPT
             mkdir -p /home/vagrant/.kv
