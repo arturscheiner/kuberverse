@@ -66,7 +66,9 @@ cat /vagrant/hosts.out >> /etc/hosts
 
 systemctl restart haproxy
 
-cat >> /etc/kuberverse/kv-scaler/haproxy.cfg <<EOF
+mkdir -p /etc/kuberverse/kv-scaler
+
+cat > /etc/kuberverse/kv-scaler/haproxy.cfg <<EOF
 global
     #debug                          # uncomment to enable debug mode for HAProxy
 
@@ -77,7 +79,7 @@ defaults
     timeout server 50000ms                   # max inactivity time on the server side
 
 frontend kv-scaler
-    bind $SCALER_IP:6443
+    bind $SCALER_IP:8443
     mode tcp
     log global
     option tcplog
@@ -97,7 +99,11 @@ backend kv-masters
     timeout server 3600s
 EOF
 
-mkdir -p /etc/kuberverse/kv-scaler
+i=0
+for mips in $MASTER_IPS; do
+  echo "    server kv-master-$i $mips:6443 check" >> /etc/kuberverse/kv-scaler/haproxy.cfg
+  ((i++))
+done
 
 cat > /etc/kuberverse/kv-scaler/Dockerfile<<EOF
 FROM haproxy:1.7
@@ -106,7 +112,7 @@ EOF
 
 cd /etc/kuberverse/kv-scaler
 docker build -t kv-scaler .
-docker run -d -p 8443:84463 --name kv-scaler kv-scaler:latest
+docker run -d -p 8443:8443 --name kv-scaler kv-scaler:latest
 
 cat > /etc/systemd/system/kv-scaler-docker.service<<EOF
 [Unit]
