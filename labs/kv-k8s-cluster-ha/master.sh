@@ -14,7 +14,7 @@ sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-define
 
 if [ $MASTER_TYPE = "single" ]; then
 
-    echo "# $KVMSG" > /vagrant/hosts.out
+    echo "# Added by Kuberverse" > /vagrant/hosts.out
     echo "$MASTER_IP     kv-master.lab.local     kv-master.local     kv-master" >> /vagrant/hosts.out
 
     kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP --apiserver-cert-extra-sans kv-master.lab.local | tee /vagrant/kubeadm-init.out
