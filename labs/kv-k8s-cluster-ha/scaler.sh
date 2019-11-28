@@ -81,10 +81,13 @@ for mips in $MASTER_IPS; do
   ((i++))
 done
 
-cat > /vagrant/hosts.out<<EOF
-# $KVMSG
-$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
-EOF
+echo "# $KVMSG" > /vagrant/hosts.out
+echo "$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler" >> /vagrant/hosts.out
+
+# cat > /vagrant/hosts.out<<EOF
+# # $KVMSG
+# $SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+# EOF
 
 cat /vagrant/hosts.out >> /etc/hosts
 
