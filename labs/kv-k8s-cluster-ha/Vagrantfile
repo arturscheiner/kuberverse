@@ -49,16 +49,21 @@ class KvLab
   def createScaler(config)
 
       if MASTER_COUNT == 1
-        p "SM Cluster -> Bypassing Scaler Creation"
+        p "This is a Single Master Cluster with:"
+        p "---- #{MASTER_COUNT} Master Node"
+        p "---- #{WORKER_COUNT} Worker(s) Node(s)"
         return
       end
 
-      p "HA Cluster -> Starting Scaler Creation"
+      p "This is a HA Cluster with:"
+      p "---- 1 Scaler Node"
+      p "---- #{MASTER_COUNT} Masters Nodes"
+      p "---- #{WORKER_COUNT} Worker(s) Node(s)"
 
       i = 0
       scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
 
-      p "Creating Scaler #{i} with Ip #{scalerIp}"
+      p "The Scaler #{i} Ip is #{scalerIp}"
 
       masterIps = Array[]
 
@@ -66,8 +71,8 @@ class KvLab
         masterIps.push(self.defineIp("master",m,KV_LAB_NETWORK))
       end
 
-      p masterIps.length
-      masterIps.each {|s| p s}
+      # p masterIps.length
+      # masterIps.each {|s| p s}
 
       config.vm.define "kv-scaler-#{i}" do |scaler|    
         scaler.vm.box = BOX_IMAGE
@@ -90,7 +95,7 @@ class KvLab
     (0..MASTER_COUNT-1).each do |i|
       masterIp = self.defineIp("master",i,KV_LAB_NETWORK)
 
-      p "Creating Master #{i} with Ip #{masterIp}"
+      p "The Master #{i} Ip is #{masterIp}"
       config.vm.define "kv-master-#{i}" do |master|
         master.vm.box = BOX_IMAGE
         master.vm.hostname = "kv-master-#{i}"
@@ -126,7 +131,7 @@ class KvLab
     (0..WORKER_COUNT-1).each do |i|
       workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
 
-      p "Creating Scaler #{i} with Ip #{workerIp}"
+      p "The Worker #{i} Ip is #{workerIp}"
       config.vm.define "kv-worker-#{i}" do |worker|
         worker.vm.box = BOX_IMAGE
         worker.vm.hostname = "kv-worker-#{i}"
