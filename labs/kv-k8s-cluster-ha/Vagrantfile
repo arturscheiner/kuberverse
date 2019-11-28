@@ -93,6 +93,7 @@ class KvLab
         master.vm.box = BOX_IMAGE
         master.vm.hostname = "kv-master-#{i}"
         master.vm.network :private_network, ip: masterIp
+        MASTER_COUNT == 1 ? scaler.vm.network "forwarded_port", guest: 6443, host: 6443 : false
         master.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--cpus", 2]
           vb.memory = MASTER_MEMORY
