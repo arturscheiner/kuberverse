@@ -1,4 +1,6 @@
-# kuberverse k8s lab provisioner
+# kuberverse kubernetes cluster lab
+# version: 0.1.0-alpha
+# description: this Vagrantfile creates a cluster with masters and workers
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
 # dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh
@@ -17,9 +19,9 @@ WORKER_MEMORY = 1024
 
 KV_LAB_NETWORK = "10.8.8.0"
 POD_CIDR = "172.18.0.0/16"
-#API_ADV_ADDRESS = "10.8.8.10" - sem uso
 
-KVMSG = "Kuberverse"
+
+KVMSG = "Kuberverse Kubernetes Cluster Lab"
 
 COMMON_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh"
 SCALER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh"
@@ -30,7 +32,7 @@ WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 class KvLab
 
   def initialize
-      puts "teste"
+      p "********** #{KVMSG} **********"
   end
 
   def defineIp(type,i,kvln)
