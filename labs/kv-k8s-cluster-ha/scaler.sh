@@ -53,13 +53,13 @@ for mips in $MASTER_IPS; do
   ((i++))
 done
 
-echo "# $KVMSG" > /vagrant/hosts.out
-echo "$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler" >> /vagrant/hosts.out
+# echo "#Added by Kuberverse" > /vagrant/hosts.out
+# echo "$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler" >> /vagrant/hosts.out
 
-# cat > /vagrant/hosts.out<<EOF
-# # $KVMSG
-# $SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
-# EOF
+cat > /vagrant/hosts.out<<EOF
+# Added by Kuberverse
+$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+EOF
 
 cat /vagrant/hosts.out >> /etc/hosts
 
@@ -105,7 +105,7 @@ EOF
 
 cd /etc/kuberverse/kv-scaler
 docker build -t kv-scaler .
-docker run -d --name -p 8080:8080 kv-scaler kv-scaler:latest
+docker run -d -p 8443:84463 --name kv-scaler kv-scaler:latest
 
 cat > /etc/systemd/system/kv-scaler-docker.service<<EOF
 [Unit]
