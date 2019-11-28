@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# kuberverse k8s lab provisioner
-# type: kubeadm-calico-full-cluster-bootstrap
+# kuberverse kubernetes cluster lab
+# version: 0.1.0-alpha
+# description: this is the masters script file
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 KVMSG=$1

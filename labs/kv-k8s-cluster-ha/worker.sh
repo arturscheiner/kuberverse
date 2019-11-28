@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# kuberverse k8s lab provisioner
+# kuberverse kubernetes cluster lab
+# version: 0.1.0-alpha
+# description: this is the workers script file
 # type: kubeadm-calico-full-cluster-bootstrap
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
