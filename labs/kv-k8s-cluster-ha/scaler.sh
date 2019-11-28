@@ -82,7 +82,7 @@ for mips in $MASTER_IPS; do
 done
 
 cat > /vagrant/hosts.out<<EOF
-# Added by $KVMSG
+# $KVMSG
 $SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
 EOF
 

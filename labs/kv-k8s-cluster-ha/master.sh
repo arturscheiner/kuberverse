@@ -14,7 +14,7 @@ sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-define
 
 if [ $MASTER_TYPE = "single" ]; then
 
-    echo "# Added by $KVMSG" > /vagrant/hosts.out
+    echo "# $KVMSG" > /vagrant/hosts.out
     echo "$MASTER_IP     kv-master.lab.local     kv-master.local     kv-master" >> /vagrant/hosts.out
 
     kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP --apiserver-cert-extra-sans kv-master.lab.local | tee /vagrant/kubeadm-init.out
@@ -37,8 +37,6 @@ else
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
 
     else
-        #$(cat masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
-        #kubeadm reset -f
         ip route del default
         ip route add default via $MASTER_IP
         $(cat /vagrant/masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
@@ -54,7 +52,7 @@ mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
 mkdir -p /vagrant/.kube
-cp -i /etc/kubernetes/admin.conf /vagrant/.kube
+cp -i /etc/kubernetes/admin.conf /vagrant/.kube/config
 
 if (( $NODE == 0 )) ; then
     kubectl apply -f /tmp/calico-defined.yaml
@@ -62,4 +60,3 @@ fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
 systemctl restart networking
-#rm /tmp/calico-default.yaml /tmp/calico-defined.yaml
