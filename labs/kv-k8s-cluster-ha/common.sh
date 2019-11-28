@@ -8,11 +8,6 @@ KVMSG=$1
 NODE_ADDRESS=$2
 MASTER_TYPE=$3
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Adding Kubernetes and Docker-CE Repo"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
 ### Install packages to allow apt to use a repository over HTTPS
 apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common
 
@@ -31,18 +26,9 @@ add-apt-repository \
   $(lsb_release -cs) \
   stable"
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Updating Repositories"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
+
 apt-get update
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Installing Required & Recommended Packages"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
 apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion ruby docker-ce=5:18.09.1~3-0~ubuntu-xenial kubeadm kubelet kubectl
 
 # Setup Docker daemon.
