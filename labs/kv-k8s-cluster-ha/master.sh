@@ -17,9 +17,9 @@ if [ $MASTER_TYPE = "single" ]; then
     echo "# Added by $KVMSG" > /vagrant/hosts.out
     echo "$MASTER_IP     kv-master.lab.local     kv-master.local     kv-master" >> /vagrant/hosts.out
 
-    kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address "kv-master.lab.local" | tee /vagrant/kubeadm-init.out
+    kubeadm init --pod-network-cidr $POD_CIDR --apiserver-advertise-address $MASTER_IP --apiserver-cert-extra-sans kv-master.lab.local | tee /vagrant/kubeadm-init.out
 
-    k=$(grep -n "kubeadm join kv-master.lab.local" /vagrant/kubeadm-init.out | cut -f1 -d:)
+    k=$(grep -n "kubeadm join $MASTER_IP" /vagrant/kubeadm-init.out | cut -f1 -d:)
     x=$(echo $k | awk '{print $1}')
     awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
 
