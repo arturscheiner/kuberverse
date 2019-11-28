@@ -7,12 +7,6 @@ KVMSG=$1
 SCALER_IP=$2
 MASTER_IPS=$(echo $3 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-
-echo "********** $SCALER_IP"
-echo "********** $MASTER_IPS"
-
 ### Install packages to allow apt to use a repository over HTTPS
 apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common haproxy
 
@@ -27,33 +21,11 @@ add-apt-repository \
 
 add-apt-repository ppa:vbernat/haproxy-2.0 -y
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Updating Repositories"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
 apt-get update
 
-echo "********** $KVMSG"
-echo "********** $KVMSG"
-echo "********** $KVMSG ->> Installing Required & Recommended Packages"
-echo "********** $KVMSG"
-echo "********** $KVMSG"
 apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproxy ruby docker-ce
 
-
-#apt-get install haproxy -y
-
 cat >> /etc/haproxy/haproxy.cfg <<EOF
-global
-    #debug                          # uncomment to enable debug mode for HAProxy
-
-defaults
-    mode http                                # enable http mode which gives of layer 7 filtering
-    timeout connect 5000ms                   # max time to wait for a connection attempt to a server to succeed
-    timeout client 50000ms                   # max inactivity time on the client side
-    timeout server 50000ms                   # max inactivity time on the server side
-
 frontend kv-scaler
     bind $SCALER_IP:6443
     mode tcp
@@ -93,9 +65,38 @@ cat /vagrant/hosts.out >> /etc/hosts
 
 systemctl restart haproxy
 
+cat >> /etc/kuberverse/kv-scaler/haproxy.cfg <<EOF
+global
+    #debug                          # uncomment to enable debug mode for HAProxy
+
+defaults
+    mode http                                # enable http mode which gives of layer 7 filtering
+    timeout connect 5000ms                   # max time to wait for a connection attempt to a server to succeed
+    timeout client 50000ms                   # max inactivity time on the client side
+    timeout server 50000ms                   # max inactivity time on the server side
+
+frontend kv-scaler
+    bind $SCALER_IP:6443
+    mode tcp
+    log global
+    option tcplog
+    timeout client 3600s
+    backlog 4096
+    maxconn 50000
+    use_backend kv-masters
+
+backend kv-masters
+    mode  tcp
+    option log-health-checks
+    option redispatch
+    option tcplog
+    balance roundrobin
+    timeout connect 1s
+    timeout queue 5s
+    timeout server 3600s
+EOF
 
 mkdir -p /etc/kuberverse/kv-scaler
-cp -i /etc/haproxy/haproxy.cfg /etc/kuberverse/kv-scaler/haproxy.cfg
 
 cat > /etc/kuberverse/kv-scaler/Dockerfile<<EOF
 FROM haproxy:1.7
@@ -104,7 +105,7 @@ EOF
 
 cd /etc/kuberverse/kv-scaler
 docker build -t kv-scaler .
-docker run -d --name kv-scaler kv-scaler:latest
+docker run -d --name -p 8080:8080 kv-scaler kv-scaler:latest
 
 cat > /etc/systemd/system/kv-scaler-docker.service<<EOF
 [Unit]
