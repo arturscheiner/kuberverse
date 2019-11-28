@@ -84,7 +84,7 @@ class KvLab
             mkdir -p /home/vagrant/.kv
             wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
             chmod +x /home/vagrant/.kv/scaler.sh
-            /home/vagrant/.kv/scaler.sh #{KVMSG} #{scalerIp} "#{masterIps}"
+            /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} "#{masterIps}"
           SCRIPT
         end
       end
@@ -116,11 +116,11 @@ class KvLab
   
             wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
             chmod +x /home/vagrant/.kv/common.sh
-            /home/vagrant/.kv/common.sh #{KVMSG}
+            /home/vagrant/.kv/common.sh "#{KVMSG}"
   
             wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
             chmod +x /home/vagrant/.kv/master.sh
-            /home/vagrant/.kv/master.sh #{KVMSG} #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+            /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
           SCRIPT
         end
       end
@@ -147,11 +147,11 @@ class KvLab
   
             wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
             chmod +x /home/vagrant/.kv/common.sh
-            /home/vagrant/.kv/common.sh #{KVMSG}
+            /home/vagrant/.kv/common.sh "#{KVMSG}"
   
             wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
             chmod +x /home/vagrant/.kv/worker.sh
-            /home/vagrant/.kv/worker.sh #{KVMSG} #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+            /home/vagrant/.kv/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
           SCRIPT
         end
       end
