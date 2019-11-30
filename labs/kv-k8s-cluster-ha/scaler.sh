@@ -28,7 +28,7 @@ apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completi
 
 cat >> /etc/haproxy/haproxy.cfg <<EOF
 frontend kv-scaler
-    bind $SCALER_IP:6443
+    bind *:6443
     mode tcp
     log global
     option tcplog
