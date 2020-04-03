@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # kuberverse kubernetes cluster lab
-# version: 0.1.0-alpha
+# version: 0.1.0-alpha-a
 # description: this is a common script file for masters and workers
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
