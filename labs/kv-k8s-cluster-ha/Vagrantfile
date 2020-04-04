@@ -98,6 +98,10 @@ class KvLab
 
         scaler.vm.provision "shell" do |s|
           s.inline = <<-SCRIPT
+
+            echo "# Added by Kuberverse" > /vagrant/hosts.out
+            echo "#{scalerIp} kv-scaler.lab.local kv-scaler.local kv-master" >> /vagrant/hosts.out
+
             mkdir -p /home/vagrant/.kv
             wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
             chmod +x /home/vagrant/.kv/scaler.sh
@@ -129,6 +133,10 @@ class KvLab
   
         master.vm.provision "shell" do |s|
           s.inline = <<-SCRIPT
+
+            echo "# Added by Kuberverse" > /vagrant/hosts.out
+            echo "#{masterIp} kv-master.lab.local kv-master.local kv-master" >> /vagrant/hosts.out"
+
             mkdir -p /home/vagrant/.kv
   
             wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
