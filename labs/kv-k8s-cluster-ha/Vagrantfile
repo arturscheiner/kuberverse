@@ -188,7 +188,7 @@ Vagrant.configure("2") do |config|
 
   kvlab = KvLab.new()
 
-  MASTER_COUNT == 1 ? return : kvlab.createScaler(config)
+  kvlab.createScaler(config)
   kvlab.createMaster(config)
   kvlab.createWorker(config)
 
