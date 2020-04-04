@@ -8,7 +8,7 @@ KVMSG=$1
 NODE=$2
 POD_CIDR=$3
 MASTER_IP=$4
-MASTER_TYPE=$5-
+MASTER_TYPE=$5
 
 wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
 sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
