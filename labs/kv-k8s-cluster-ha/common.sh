@@ -34,6 +34,8 @@ apt-get install -y nfs-kernel-server nfs-common avahi-daemon libnss-mdns tracero
 
 #modprobe nf_conntrack
 
+cat /vagrant/hosts.out >> /etc/hosts
+
 # Setup Docker daemon.
 cat > /etc/docker/daemon.json <<EOF
 {
@@ -53,5 +55,3 @@ systemctl daemon-reload
 systemctl restart docker
 
 kubeadm config images pull
-
-cat /vagrant/hosts.out >> /etc/hosts
