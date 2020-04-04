@@ -26,7 +26,7 @@ apt-get update
 
 apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproxy ruby docker-ce
 
-cat >> /etc/haproxy/haproxy.cfg <<EOF
+tee /etc/haproxy/haproxy.cfg <<EOF
 global
         log /dev/log    local0
         log /dev/log    local1 notice
@@ -65,7 +65,7 @@ EOF
 
 i=0
 for mips in $MASTER_IPS; do
-  echo "    server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
+  echo "        server kv-master-$i $mips:6443 check" >> /etc/haproxy/haproxy.cfg
   ((i++))
 done
 
