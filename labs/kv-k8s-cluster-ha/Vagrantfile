@@ -130,12 +130,18 @@ class KvLab
           vb.customize ["modifyvm", :id, "--cpus", 2]
           vb.memory = MASTER_MEMORY
         end
-  
+        
         master.vm.provision "shell" do |s|
-          s.inline = <<-SCRIPT
-
+          if MASTER_COUNT == 1
+            s.inline = <<-SCRIPT
             echo "# Added by Kuberverse" > /vagrant/hosts.out
             echo "#{masterIp} kv-master.lab.local kv-master.local kv-master" >> /vagrant/hosts.out
+            SCRIPT
+          end
+        end
+
+        master.vm.provision "shell" do |s|
+          s.inline = <<-SCRIPT
 
             mkdir -p /home/vagrant/.kv
   
