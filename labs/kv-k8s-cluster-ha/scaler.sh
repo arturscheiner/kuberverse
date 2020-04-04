@@ -72,10 +72,10 @@ done
 # echo "#Added by Kuberverse" > /vagrant/hosts.out
 # echo "$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler" >> /vagrant/hosts.out
 
-cat > /vagrant/hosts.out<<EOF
+#cat > /vagrant/hosts.out<<EOF
 # Added by Kuberverse
-$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
-EOF
+#$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
+#EOF
 
 cat /vagrant/hosts.out >> /etc/hosts
 
