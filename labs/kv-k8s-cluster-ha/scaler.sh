@@ -26,6 +26,8 @@ apt-get update
 
 apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproxy ruby docker-ce
 
+systemctl stop haproxy
+
 tee /etc/haproxy/haproxy.cfg <<EOF
 global
         log /dev/log    local0
