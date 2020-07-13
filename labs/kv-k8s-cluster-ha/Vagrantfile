@@ -15,7 +15,7 @@ BOX_IMAGE = "bento/ubuntu-16.04"
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
 # provisioning.
-MASTER_COUNT = 1
+MASTER_COUNT = 2
 WORKER_COUNT = 2
 
 # Change these values if you wish to play with the 
