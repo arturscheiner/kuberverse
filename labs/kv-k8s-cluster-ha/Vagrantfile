@@ -96,18 +96,21 @@ class KvLab
           vb.memory = SCALER_MEMORY
         end
 
-        scaler.vm.provision "shell" do |s|
-          s.inline = <<-SCRIPT
-
-            echo "# Added by Kuberverse" > /vagrant/hosts.out
-            echo "#{scalerIp} kv-scaler.lab.local kv-scaler.local kv-master" >> /vagrant/hosts.out
-
-            mkdir -p /home/vagrant/.kv
-            wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
-            chmod +x /home/vagrant/.kv/scaler.sh
-            /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} "#{masterIps}"
-          SCRIPT
+        scalar.vm.provider "vmware_desktop" do |v|
+          v.vmx["memsize"] = SCALER_MEMORY
+          v.vmx["numvcpus"] = "2"
         end
+       
+        $script = <<-SCRIPT
+          echo "# Added by Kuberverse" > /vagrant/hosts.out
+          echo "#{scalerIp} kv-scaler.lab.local kv-scaler.local kv-master" >> /vagrant/hosts.out
+
+          mkdir -p /home/vagrant/.kv
+          wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
+          chmod +x /home/vagrant/.kv/scaler.sh
+          /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} "#{masterIps}"
+        SCRIPT
+        scaler.vm.provision "shell", inline: $script
       end
   end
 
@@ -122,8 +125,14 @@ class KvLab
         master.vm.hostname = "kv-master-#{i}"
         master.vm.network :private_network, ip: masterIp
         
+        $script = ""
+
         if MASTER_COUNT == 1
           master.vm.network "forwarded_port", guest: 6443, host: 6443
+          $script = <<-SCRIPT
+            echo "# Added by Kuberverse" > /vagrant/hosts.out
+            echo "#{masterIp} kv-master.lab.local kv-master.local kv-master" >> /vagrant/hosts.out
+          SCRIPT
         end
 
         master.vm.provider :virtualbox do |vb|
@@ -131,28 +140,24 @@ class KvLab
           vb.memory = MASTER_MEMORY
         end
 
-        master.vm.provision "shell" do |s|
-
-          if MASTER_COUNT == 1
-            s.inline = <<-SCRIPT
-            echo "# Added by Kuberverse" > /vagrant/hosts.out
-            echo "#{masterIp} kv-master.lab.local kv-master.local kv-master" >> /vagrant/hosts.out
-            SCRIPT
-          end
-          
-          s.inline = <<-SCRIPT
-
-            mkdir -p /home/vagrant/.kv
-  
-            wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            chmod +x /home/vagrant/.kv/common.sh
-            /home/vagrant/.kv/common.sh "#{KVMSG}"
-  
-            wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
-            chmod +x /home/vagrant/.kv/master.sh
-            /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
-          SCRIPT
+        master.vm.provider "vmware_desktop" do |v|
+          v.vmx["memsize"] = MASTER_MEMORY
+          v.vmx["numvcpus"] = "2"
         end
+
+        $script = $script + <<-SCRIPT
+
+          mkdir -p /home/vagrant/.kv
+  
+          wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+          chmod +x /home/vagrant/.kv/common.sh
+          /home/vagrant/.kv/common.sh "#{KVMSG}"
+  
+          wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
+          chmod +x /home/vagrant/.kv/master.sh
+          /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+        SCRIPT
+        master.vm.provision "shell", inline: $script
       end
     end   
   end
@@ -170,20 +175,24 @@ class KvLab
           vb.customize ["modifyvm", :id, "--cpus", 2]
           vb.memory = WORKER_MEMORY
         end
-  
-        worker.vm.provision "shell" do |s|
-          s.inline = <<-SCRIPT
-            mkdir -p /home/vagrant/.kv
-  
-            wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            chmod +x /home/vagrant/.kv/common.sh
-            /home/vagrant/.kv/common.sh "#{KVMSG}"
-  
-            wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
-            chmod +x /home/vagrant/.kv/worker.sh
-            /home/vagrant/.kv/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
-          SCRIPT
+
+        worker.vm.provider "vmware_desktop" do |v|
+          v.vmx["memsize"] = WORKER_MEMORY
+          v.vmx["numvcpus"] = "2"
         end
+  
+        $script = <<-SCRIPT
+          mkdir -p /home/vagrant/.kv
+  
+          wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
+          chmod +x /home/vagrant/.kv/common.sh
+          /home/vagrant/.kv/common.sh "#{KVMSG}"
+  
+          wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
+          chmod +x /home/vagrant/.kv/worker.sh
+          /home/vagrant/.kv/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+        SCRIPT
+        worker.vm.provision "shell", inline: $script
       end
     end
   end
