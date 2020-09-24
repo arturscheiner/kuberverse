@@ -96,7 +96,7 @@ class KvLab
           vb.memory = SCALER_MEMORY
         end
 
-        scalar.vm.provider "vmware_desktop" do |v|
+        scaler.vm.provider "vmware_desktop" do |v|
           v.vmx["memsize"] = SCALER_MEMORY
           v.vmx["numvcpus"] = "2"
         end
