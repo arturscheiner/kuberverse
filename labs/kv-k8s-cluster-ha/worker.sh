@@ -17,3 +17,5 @@ else
 fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$WORKER_IP > /etc/default/kubelet
+
+systemctl restart kubelet
