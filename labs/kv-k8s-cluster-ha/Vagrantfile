@@ -1,7 +1,7 @@
 # kuberverse kubernetes cluster lab
 # version: 0.1.0-alpha
 # description: this Vagrantfile creates a cluster with masters and workers
-# type: kubeadm-calico-full-cluster-bootstrap
+# type: kubeadm-calico-full-cluster-bootstrapx
 # created by Artur Scheiner - artur.scheiner@gmail.com
 # dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh
