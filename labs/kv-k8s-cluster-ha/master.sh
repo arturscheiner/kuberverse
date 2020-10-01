@@ -61,3 +61,4 @@ fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
 systemctl restart networking
+systemctl restart kubelet
