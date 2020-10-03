@@ -1,7 +1,6 @@
 # kuberverse kubernetes cluster lab
-# version: 0.1.0-alpha
+# version: 0.2.0-alpha
 # description: this Vagrantfile creates a cluster with masters and workers
-# type: kubeadm-calico-full-cluster-bootstrapx
 # created by Artur Scheiner - artur.scheiner@gmail.com
 # dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/scaler.sh
@@ -10,7 +9,14 @@
 
 # Is not recommended, but you can change the base box.
 # This means that all the VMs will use the same image.
-BOX_IMAGE = "bento/ubuntu-16.04"
+# For vmware_desktop provider use
+# BOX_IMAGE = "bento/ubuntu-16.04"
+# For virtualbox provider you can choose to use
+# bento or kuberverse images. The difference is
+# that kuberverse images are pre-loaded with
+# the packages needed to create the cluster
+# that means less time to build the cluster.
+BOX_IMAGE = "kuberverse/ubuntu-16.04"
 
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
@@ -96,9 +102,11 @@ class KvLab
           vb.memory = SCALER_MEMORY
         end
 
-        scaler.vm.provider "vmware_desktop" do |v|
-          v.vmx["memsize"] = SCALER_MEMORY
-          v.vmx["numvcpus"] = "2"
+        if !BOX_IMAGE.include? "kuberverse"
+          scaler.vm.provider "vmware_desktop" do |v|
+            v.vmx["memsize"] = SCALER_MEMORY
+            v.vmx["numvcpus"] = "2"
+          end
         end
        
         $script = <<-SCRIPT
@@ -140,9 +148,11 @@ class KvLab
           vb.memory = MASTER_MEMORY
         end
 
-        master.vm.provider "vmware_desktop" do |v|
-          v.vmx["memsize"] = MASTER_MEMORY
-          v.vmx["numvcpus"] = "2"
+        if !BOX_IMAGE.include? "kuberverse"
+          master.vm.provider "vmware_desktop" do |v|
+            v.vmx["memsize"] = MASTER_MEMORY
+            v.vmx["numvcpus"] = "2"
+          end
         end
 
         $script = $script + <<-SCRIPT
@@ -151,7 +161,7 @@ class KvLab
   
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
-          /home/vagrant/.kv/common.sh "#{KVMSG}"
+          /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE}
   
           wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
           chmod +x /home/vagrant/.kv/master.sh
@@ -176,9 +186,11 @@ class KvLab
           vb.memory = WORKER_MEMORY
         end
 
-        worker.vm.provider "vmware_desktop" do |v|
-          v.vmx["memsize"] = WORKER_MEMORY
-          v.vmx["numvcpus"] = "2"
+        if !BOX_IMAGE.include? "kuberverse"
+          worker.vm.provider "vmware_desktop" do |v|
+            v.vmx["memsize"] = WORKER_MEMORY
+            v.vmx["numvcpus"] = "2"
+          end
         end
   
         $script = <<-SCRIPT
@@ -186,7 +198,7 @@ class KvLab
   
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
-          /home/vagrant/.kv/common.sh "#{KVMSG}"
+          /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE}
   
           wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
           chmod +x /home/vagrant/.kv/worker.sh
