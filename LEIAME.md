@@ -1,5 +1,5 @@
 # kuberverse x
-This is the kuberverse youtube channel repo
+This is the kuberverse youtube channel repos
 
 Here you will find the files used in our labs. Please, be free to try it out!
 
