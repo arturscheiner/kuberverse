@@ -8,6 +8,8 @@ KVMSG=$1
 SCALER_IP=$2
 MASTER_IPS=$(echo $3 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 
+export DEBIAN_FRONTEND=noninteractive
+
 ### Install packages to allow apt to use a repository over HTTPS
 apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common haproxy
 
