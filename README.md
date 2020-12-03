@@ -5,7 +5,7 @@ Hello kubers, welcome to kuberverse repo! This is the place where we publish the
 
 ## Getting Started
 
-Here, you will find instructions on how to get ready with our labs. The labs where written with easy in mind, to help you build and play **kubernetes clusters**. Please, fell free to try them out!
+Here, you will find instructions on how to get ready with our labs. The labs where written with easy in mind, to help you build and play **kubernetes clusters**. Please, fell free to try them out!!
 
 ## System Requirements
 
