@@ -22,10 +22,12 @@ then
   apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
   ### Add Kubernetes GPG key
-  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-
+  #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  
   ### Kubernetes Repo
-  add-apt-repository "deb http://apt.kubernetes.io/ kubernetes-$UBUNTU_CODENAME main"
+  #add-apt-repository "deb http://apt.kubernetes.io/ kubernetes-$UBUNTU_CODENAME main"
+  echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
   ### Add Docker’s official GPG key
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
