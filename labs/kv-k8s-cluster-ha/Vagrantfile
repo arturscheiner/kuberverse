@@ -10,13 +10,13 @@
 # Is not recommended, but you can change the base box.
 # This means that all the VMs will use the same image.
 # For vmware_desktop provider use
-# BOX_IMAGE = "bento/ubuntu-16.04"
+BOX_IMAGE = "bento/ubuntu-18.04"
 # For virtualbox provider you can choose to use
 # bento or kuberverse images. The difference is
 # that kuberverse images are pre-loaded with
 # the packages needed to create the cluster
 # that means less time to build the cluster.
-BOX_IMAGE = "kuberverse/ubuntu-16.04"
+# BOX_IMAGE = "kuberverse/ubuntu-16.04"
 
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
@@ -25,9 +25,10 @@ MASTER_COUNT = 2
 WORKER_COUNT = 2
 
 # Change these values if you wish to play with the 
-# VMs memory resources. 
+# VMs memory resources.
+# Kubernetes pre-flight for the MASTER_NODES now requires 1700+ of memory.
 SCALER_MEMORY = 512
-MASTER_MEMORY = 1024
+MASTER_MEMORY = 2048
 WORKER_MEMORY = 1024
 
 # Change these values if you wish to play with the
