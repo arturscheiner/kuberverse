@@ -10,8 +10,11 @@ POD_CIDR=$3
 MASTER_IP=$4
 MASTER_TYPE=$5
 
-wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
-sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
+# wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
+wget -q https://docs.projectcalico.org/manifests/tigera-operator.yaml -O /tmp/tigera-operator.yaml
+wget -q https://docs.projectcalico.org/manifests/custom-resources.yaml -O /tmp/custom-resources.yaml
+
+sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/custom-resources.yaml > /tmp/custom-resources-defined.yaml
 
 if [ $MASTER_TYPE = "single" ]; then
 
@@ -56,7 +59,8 @@ mkdir -p /vagrant/.kube
 cp -i /etc/kubernetes/admin.conf /vagrant/.kube/config
 
 if (( $NODE == 0 )) ; then
-    kubectl apply -f /tmp/calico-defined.yaml
+    kubectl create -f /tmp/tigera-operator.yaml
+    kubectl create -f /tmp/custom-resources-defined.yaml
 fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
