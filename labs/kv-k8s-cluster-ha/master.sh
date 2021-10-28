@@ -42,7 +42,9 @@ else
     else
         #ip route del default
         #ip route add default via $MASTER_IP
-        $(cat /vagrant/masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
+        sed "s+kubeadm join kv-scaler.lab.local:6443+kubeadm join kv-scaler.lab.local:6443 --apiserver-advertise-address $MASTER_IP+g" /vagrant/masters-join-default.out > /vagrant/masters-join-$NODE.out
+
+        $(cat /vagrant/masters-join-$NODE.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     fi
 
 fi
