@@ -4,7 +4,7 @@ This is the **full lab** created for those who wants to install a k8s cluster us
 
 ### Latest Changes ###
 
-This lab was recently updated to run the latest version of Kubernetes 1.19.2. The cluster runs over Ubuntu 16.04.7 and the container runtime chosen was Docker 18.09. All links and references where updated to reflect the actual changes.
+28/10/2021 - This lab was updated to run the latest version of Kubernetes 1.22.3. The cluster runs over Ubuntu 18.04.6 and the container runtime Docker 18.9.1. All links and references where updated to reflect the actual changes.
 
 ##### Use it if: #####
 
