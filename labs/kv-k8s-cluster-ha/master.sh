@@ -34,11 +34,8 @@ else
 
         k=$(grep -n "kubeadm join kv-scaler.lab.local" /vagrant/kubeadm-init.out | cut -f1 -d:)
         x=$(echo $k | awk '{print $1}')
-        awk -v ln=$x 'NR>=ln && NR<=ln+2' /vagrant/kubeadm-init.out | tee /vagrant/masters-join-default.out
-        sed "s+kubeadm join kv-scaler.lab.local:6443+kubeadm join kv-scaler.lab.local:6443 --apiserver-advertise-address $MASTER_IP+g" /vagrant/masters-join-default.out > /vagrant/masters-join.out
-        
+        awk -v ln=$x 'NR>=ln && NR<=ln+2' /vagrant/kubeadm-init.out | tee /vagrant/masters-join-default.out      
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
-
     else
         #ip route del default
         #ip route add default via $MASTER_IP
