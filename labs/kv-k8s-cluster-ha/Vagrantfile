@@ -1,5 +1,5 @@
 # kuberverse kubernetes cluster lab
-# version: 0.2.0-alpha
+# version: 0.2.0
 # description: this Vagrantfile creates a cluster with masters and workers
 # created by Artur Scheiner - artur.scheiner@gmail.com
 # dependencies: https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/common.sh
