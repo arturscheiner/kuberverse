@@ -10,11 +10,8 @@ POD_CIDR=$3
 MASTER_IP=$4
 MASTER_TYPE=$5
 
-# wget -q https://docs.projectcalico.org/v3.10/manifests/calico.yaml -O /tmp/calico-default.yaml
-wget -q https://docs.projectcalico.org/manifests/tigera-operator.yaml -O /tmp/tigera-operator.yaml
-wget -q https://docs.projectcalico.org/manifests/custom-resources.yaml -O /tmp/custom-resources.yaml
-
-sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/custom-resources.yaml > /tmp/custom-resources-defined.yaml
+wget -q https://docs.projectcalico.org/manifests/calico.yaml -O /tmp/calico-default.yaml
+sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
 
 if [ $MASTER_TYPE = "single" ]; then
 
@@ -31,8 +28,8 @@ else
 
     if (( $NODE == 0 )) ; then
 
-        ip route del default
-        ip route add default via $MASTER_IP
+        #ip route del default
+        #ip route add default via $MASTER_IP
         kubeadm init --control-plane-endpoint "kv-scaler.lab.local:6443" --upload-certs --pod-network-cidr $POD_CIDR --apiserver-cert-extra-sans kv-master.lab.local | tee /vagrant/kubeadm-init.out
 
         k=$(grep -n "kubeadm join kv-scaler.lab.local" /vagrant/kubeadm-init.out | cut -f1 -d:)
@@ -41,8 +38,8 @@ else
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
 
     else
-        ip route del default
-        ip route add default via $MASTER_IP
+        #ip route del default
+        #ip route add default via $MASTER_IP
         $(cat /vagrant/masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     fi
 
@@ -59,8 +56,7 @@ mkdir -p /vagrant/.kube
 cp -i /etc/kubernetes/admin.conf /vagrant/.kube/config
 
 if (( $NODE == 0 )) ; then
-    kubectl create -f /tmp/tigera-operator.yaml
-    kubectl create -f /tmp/custom-resources-defined.yaml
+    kubectl apply -f /tmp/calico-defined.yaml
 fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
