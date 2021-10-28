@@ -38,8 +38,8 @@ else
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
 
     else
-        #ip route del default
-        #ip route add default via $MASTER_IP
+        ip route del default
+        ip route add default via $MASTER_IP
         $(cat /vagrant/masters-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     fi
 
