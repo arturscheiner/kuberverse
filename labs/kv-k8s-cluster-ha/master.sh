@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # kuberverse kubernetes cluster lab
-# version: 0.1.0-alpha
+# version: 0.2.0
 # description: this is the masters script file
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
@@ -27,9 +27,6 @@ if [ $MASTER_TYPE = "single" ]; then
 else
 
     if (( $NODE == 0 )) ; then
-
-        #ip route del default
-        #ip route add default via $MASTER_IP
         kubeadm init --control-plane-endpoint "kv-scaler.lab.local:6443" --apiserver-advertise-address $MASTER_IP --upload-certs --pod-network-cidr $POD_CIDR --apiserver-cert-extra-sans kv-master.lab.local --apiserver-cert-extra-sans kv-scaler.lab.local | tee /vagrant/kubeadm-init.out
 
         k=$(grep -n "kubeadm join kv-scaler.lab.local" /vagrant/kubeadm-init.out | cut -f1 -d:)
@@ -37,10 +34,7 @@ else
         awk -v ln=$x 'NR>=ln && NR<=ln+2' /vagrant/kubeadm-init.out | tee /vagrant/masters-join-default.out      
         awk -v ln=$x 'NR>=ln && NR<=ln+1' /vagrant/kubeadm-init.out | tee /vagrant/workers-join.out
     else
-        #ip route del default
-        #ip route add default via $MASTER_IP
         sed "s+kubeadm join kv-scaler.lab.local:6443+kubeadm join kv-scaler.lab.local:6443 --apiserver-advertise-address $MASTER_IP+g" /vagrant/masters-join-default.out > /vagrant/masters-join-$NODE.out
-
         $(cat /vagrant/masters-join-$NODE.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
     fi
 
@@ -61,8 +55,6 @@ if (( $NODE == 0 )) ; then
 fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
-#ip route del default
-#ip route add default via 10.0.2.2
 
 systemctl restart networking
 systemctl restart kubelet
