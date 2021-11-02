@@ -138,7 +138,7 @@ systemctl daemon-reload
 systemctl enable containerd
 systemctl restart containerd
 systemctl enable kubelet && systemctl start kubelet
-
+;;
 docker)
 apt-get install -y docker.io docker-ce=5:18.09.1~3-0~ubuntu-$UBUNTU_CODENAME
 # Setup Docker daemon
