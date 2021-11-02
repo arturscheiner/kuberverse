@@ -33,8 +33,8 @@ CNI_PROVIDER = "calico"
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
 # provisioning.
-MASTER_COUNT = 2
-WORKER_COUNT = 2
+MASTER_COUNT = 1
+WORKER_COUNT = 1
 
 # Change these values if you wish to play with the 
 # VMs memory resources.
@@ -58,11 +58,54 @@ SCALER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/
 MASTER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh"
 WORKER_SCRIPT_URL = "https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh"
 
+def colorize(text, color_code)
+  "\e[#{color_code}m#{text}\e[0m"
+ end
+
+def red(text); colorize(text, 31); end
+def green(text); colorize(text, 32); end
+def yellow(text); colorize(text, 33); end
+def blue(text); colorize(text, 34); end
+
+class String
+  def black; "\e[30m#{self}\e[0m" end
+  def red; "\e[31m#{self}\e[0m" end
+  def green; "\e[32m#{self}\e[0m" end
+  def brown; "\e[33m#{self}\e[0m" end
+  def blue; "\e[34m#{self}\e[0m" end
+  def magenta; "\e[35m#{self}\e[0m" end
+  def cyan; "\e[36m#{self}\e[0m" end
+  def gray; "\e[37m#{self}\e[0m" end
+ 
+  def bg_black; "\e[40m#{self}\e[0m" end
+  def bg_red; "\e[41m#{self}\e[0m" end
+  def bg_green; "\e[42m#{self}\e[0m" end
+  def bg_brown; "\e[43m#{self}\e[0m" end
+  def bg_blue; "\e[44m#{self}\e[0m" end
+  def bg_magenta; "\e[45m#{self}\e[0m" end
+  def bg_cyan; "\e[46m#{self}\e[0m" end
+  def bg_gray; "\e[47m#{self}\e[0m" end
+ 
+  def bold; "\e[1m#{self}\e[22m" end
+  def italic; "\e[3m#{self}\e[23m" end
+  def underline; "\e[4m#{self}\e[24m" end
+  def blink; "\e[5m#{self}\e[25m" end
+  def reverse_color; "\e[7m#{self}\e[27m" end
+end
 
 class KvLab
 
   def initialize
-      p "********** #{KVMSG} **********"
+      puts "********** #{green(KVMSG)} **********"
+
+      checkmark = "\u2713"
+      puts checkmark.force_encoding('utf-8').green.bold.blink
+
+      puts "---- Provisioned with k8s #{yellow(KUBE_VERSION)}".blue
+      puts "---- Container runtime is: #{yellow(CONTAINER_RUNTIME)}"
+      puts "---- CNI Provider is: #{yellow(CNI_PROVIDER)}"
+      puts "---- #{MASTER_COUNT} Masters Nodes"
+      puts "---- #{WORKER_COUNT} Worker(s) Node(s)" unless MASTER_COUNT == 5
   end
 
   def defineIp(type,i,kvln)
@@ -78,6 +121,9 @@ class KvLab
   
   def createScaler(config)
 
+    i = 0
+    scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
+
      # if MASTER_COUNT == 1
      #   p "This is a Single Master Cluster with:"
      #   p "---- #{MASTER_COUNT} Master Node"
@@ -86,23 +132,10 @@ class KvLab
      #  return
      # end
 
-      p "This is a Kubernetes Cluster with:"
-
       if MASTER_COUNT != 1
-        p "---- 1 Scaler Node"
-        p "The Scaler #{i} Ip is #{scalerIp}"
+        puts "---- 1 Scaler Node"
+        puts "The Scaler #{i} Ip is #{scalerIp}"
       end
-      
-      p "---- #{MASTER_COUNT} Masters Nodes"
-      p "---- #{WORKER_COUNT} Worker(s) Node(s)"
-      p "---- Provisioned with k8s v#{KUBE_VERSION}"
-      p "---- Container runtime is: #{CONTAINER_RUNTIME}"
-      p "---- CNI Provider is: #{CNI_PROVIDER}"
-
-      i = 0
-      scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
-
-      
 
       masterIps = Array[]
 
@@ -149,7 +182,7 @@ class KvLab
     (0..MASTER_COUNT-1).each do |i|
       masterIp = self.defineIp("master",i,KV_LAB_NETWORK)
 
-      p "The Master #{i} Ip is #{masterIp}"
+      puts "The Master #{i} Ip is #{masterIp}"
       config.vm.define "kv-master-#{i}" do |master|
         master.vm.box = BOX_IMAGE
         master.vm.hostname = "kv-master-#{i}"
@@ -183,11 +216,11 @@ class KvLab
   
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
-          /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE}
+          /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
   
           wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
           chmod +x /home/vagrant/.kv/master.sh
-          /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+          /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"} #{CNI_PROVIDER}
         SCRIPT
         master.vm.provision "shell", inline: $script
       end
@@ -198,7 +231,7 @@ class KvLab
     (0..WORKER_COUNT-1).each do |i|
       workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
 
-      p "The Worker #{i} Ip is #{workerIp}"
+      puts "The Worker #{i} Ip is #{workerIp}"
       config.vm.define "kv-worker-#{i}" do |worker|
         worker.vm.box = BOX_IMAGE
         worker.vm.hostname = "kv-worker-#{i}"
@@ -220,7 +253,7 @@ class KvLab
   
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
-          /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE}
+          /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
   
           wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
           chmod +x /home/vagrant/.kv/worker.sh
@@ -236,13 +269,19 @@ Vagrant.configure("2") do |config|
 
   kvlab = KvLab.new()
 
-  kvlab.createScaler(config)
-  kvlab.createMaster(config)
-  kvlab.createWorker(config)
+  if ARGV[0] == "up" or ARGV[0] == "status"
+    
+    if MASTER_COUNT >= 2
+      kvlab.createScaler(config)
+    end
+
+    kvlab.createMaster(config)
+    kvlab.createWorker(config)
 
 
-  config.vm.provision "shell",
-   run: "always",
-   inline: "swapoff -a"
-
+    config.vm.provision "shell",
+     run: "always",
+     inline: "swapoff -a"
+  end
+  
 end

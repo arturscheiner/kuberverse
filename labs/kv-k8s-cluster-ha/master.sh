@@ -9,9 +9,7 @@ NODE=$2
 POD_CIDR=$3
 MASTER_IP=$4
 MASTER_TYPE=$5
-
-wget -q https://docs.projectcalico.org/manifests/calico.yaml -O /tmp/calico-default.yaml
-sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
+CNI_PROVIDER=$6
 
 if [ $MASTER_TYPE = "single" ]; then
 
@@ -51,7 +49,24 @@ mkdir -p /vagrant/.kube
 cp -i /etc/kubernetes/admin.conf /vagrant/.kube/config
 
 if (( $NODE == 0 )) ; then
-    kubectl apply -f /tmp/calico-defined.yaml
+    case $CNI_PROVIDER in
+    calico)
+        wget -q https://docs.projectcalico.org/manifests/calico.yaml -O /tmp/calico-default.yaml
+        sed "s+192.168.0.0/16+$POD_CIDR+g" /tmp/calico-default.yaml > /tmp/calico-defined.yaml
+        kubectl apply -f /tmp/calico-defined.yaml
+        ;;
+    weave)
+        wget -q "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=$POD_CIDR" -O /tmp/weave-defined.yaml
+        kubectl apply -f /tmp/weave-defined.yaml
+        ;;
+
+    flannel)
+        #not supported yet
+        ;;
+    *)
+        #no default defined
+        ;;
+    esac   
 fi
 
 echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
