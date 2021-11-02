@@ -26,6 +26,10 @@ KUBE_VERSION = "1.22.3"
 # You can choose between containerd|docker
 CONTAINER_RUNTIME = "containerd"
 
+# Define CNI Provider
+# Choose between calico|weave|flannel
+CNI_PROVIDER = "calico"
+
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
 # provisioning.
