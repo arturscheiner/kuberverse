@@ -95,6 +95,9 @@ class KvLab
       
       p "---- #{MASTER_COUNT} Masters Nodes"
       p "---- #{WORKER_COUNT} Worker(s) Node(s)"
+      p "---- Provisioned with k8s v#{KUBE_VERSION}"
+      p "---- Container runtime is: #{CONTAINER_RUNTIME}"
+      p "---- CNI Provider is: #{CNI_PROVIDER}"
 
       i = 0
       scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
