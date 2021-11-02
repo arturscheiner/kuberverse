@@ -18,6 +18,14 @@ BOX_IMAGE = "bento/ubuntu-18.04"
 # that means less time to build the cluster.
 # BOX_IMAGE = "kuberverse/ubuntu-16.04"
 
+# Define the k8s version to be used on this lab.
+KUBE_VERSION = "1.22.3"
+
+# Define the container runtime that will be used on
+# your lab. From k8s v1.22 the default runtime is containerd.
+# You can choose between containerd|docker
+CONTAINER_RUNTIME = "containerd"
+
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
 # provisioning.
