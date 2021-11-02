@@ -78,22 +78,28 @@ class KvLab
   
   def createScaler(config)
 
-      if MASTER_COUNT == 1
-        p "This is a Single Master Cluster with:"
-        p "---- #{MASTER_COUNT} Master Node"
-        p "---- #{WORKER_COUNT} Worker(s) Node(s)"
-        return
-      end
+     # if MASTER_COUNT == 1
+     #   p "This is a Single Master Cluster with:"
+     #   p "---- #{MASTER_COUNT} Master Node"
+     #   p "---- #{WORKER_COUNT} Worker(s) Node(s)"
+     #  p "---- Provisioned with Kubernetes v#{KUBE_VERSION}"
+     #  return
+     # end
 
-      p "This is a HA Cluster with:"
-      p "---- 1 Scaler Node"
+      p "This is a Kubernetes Cluster with:"
+
+      if MASTER_COUNT != 1
+        p "---- 1 Scaler Node"
+        p "The Scaler #{i} Ip is #{scalerIp}"
+      end
+      
       p "---- #{MASTER_COUNT} Masters Nodes"
       p "---- #{WORKER_COUNT} Worker(s) Node(s)"
 
       i = 0
       scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
 
-      p "The Scaler #{i} Ip is #{scalerIp}"
+      
 
       masterIps = Array[]
 
