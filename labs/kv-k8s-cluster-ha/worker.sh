@@ -16,6 +16,10 @@ else
     $(cat /vagrant/workers-join.out | sed -e 's/^[ \t]*//' | tr '\n' ' ' | sed -e 's/ \\ / /g')
 fi
 
-echo KUBELET_EXTRA_ARGS=--node-ip=$WORKER_IP > /etc/default/kubelet
+if grep -E "KUBELET_EXTRA_ARGS=" /etc/default/kubelet ; then
+  sed -i "s+KUBELET_EXTRA_ARGS=\"+KUBELET_EXTRA_ARGS=\"--node-ip=$WORKER_IP +g" /etc/default/kubelet
+else
+  echo KUBELET_EXTRA_ARGS=--node-ip=$WORKER_IP  >> /etc/default/kubelet
+fi
 
 systemctl restart kubelet

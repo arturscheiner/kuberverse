@@ -8,8 +8,8 @@ KVMSG=$1
 NODE=$2
 POD_CIDR=$3
 MASTER_IP=$4
-MASTER_TYPE=$5
-CNI_PROVIDER=$6
+CNI_PROVIDER=$5
+MASTER_TYPE=$6
 
 if [ $MASTER_TYPE = "single" ]; then
 
@@ -69,7 +69,11 @@ if (( $NODE == 0 )) ; then
     esac   
 fi
 
-echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  > /etc/default/kubelet
+if grep -E "KUBELET_EXTRA_ARGS=" /etc/default/kubelet ; then
+  sed -i "s+KUBELET_EXTRA_ARGS=\"+KUBELET_EXTRA_ARGS=\"--node-ip=$MASTER_IP +g" /etc/default/kubelet
+else
+  echo KUBELET_EXTRA_ARGS=--node-ip=$MASTER_IP  >> /etc/default/kubelet
+fi
 
 systemctl restart networking
 systemctl restart kubelet
