@@ -41,7 +41,7 @@ then
   ### Refresh apt cache install packages
   apt-get update
 
-  apt-get install -y nfs-kernel-server nfs-common \
+  apt-get install -y nfs-kernel-server nfs-common apt-cacher-ng \
                     traceroute htop httpie bash-completion ruby \
                     kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
 fi
