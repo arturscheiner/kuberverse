@@ -194,7 +194,7 @@ class KvLab
           master.vm.network "forwarded_port", guest: 6443, host: 6443
           $script = <<-SCRIPT
             echo "# Added by Kuberverse" > /vagrant/hosts.out
-            echo "#{masterIp} kv-master.lab.local kv-master.local kv-master" >> /vagrant/hosts.out
+            echo "#{masterIp} kv-master.lab.local kv-master.local kv-master kv-scaler.lab.local" >> /vagrant/hosts.out
           SCRIPT
         end
 
@@ -220,7 +220,7 @@ class KvLab
   
           wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
           chmod +x /home/vagrant/.kv/master.sh
-          /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{MASTER_COUNT == 1 ? "single" : "multi"} #{CNI_PROVIDER}
+          /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{CNI_PROVIDER} #{MASTER_COUNT == 1 ? "single" : "multi"}
         SCRIPT
         master.vm.provision "shell", inline: $script
       end
