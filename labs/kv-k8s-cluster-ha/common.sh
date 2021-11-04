@@ -22,10 +22,7 @@ then
 
   ### Install packages to allow apt to use a repository over HTTPS
   apt-get update
-  apt-get install -y apt-cacher-ng apt-transport-https ca-certificates curl software-properties-common
-
-  systemctl start apt-cacher-ng
-  systemctl enable apt-cacher-ng
+  apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
   ### Add Kubernetes GPG key
   #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
