@@ -48,6 +48,8 @@ fi
 
 cat /vagrant/hosts.out >> /etc/hosts
 
+systemctl start apt-cacher-ng
+systemctl enable apt-cacher-ng
 
 case $CONTAINER_RUNTIME in
 containerd)
@@ -167,8 +169,6 @@ cri-o)
 #no default defined
 ;;
 esac
-
-
 
 if [[ ! $BOX_IMAGE =~ "kuberverse" ]]
 then

@@ -14,8 +14,7 @@ MASTER_TYPE=$6
 if [ $MASTER_TYPE = "single" ]; then
 
     sed -i "s+# PassThroughPattern: \.\*+PassThroughPattern: .*+g" /etc/apt-cacher-ng/acng.conf
-    systemctl start apt-cacher-ng
-    systemctl enable apt-cacher-ng
+    systemctl restart apt-cacher-ng
     #echo "# Added by Kuberverse" > /vagrant/hosts.out
     #echo "$MASTER_IP     kv-master.lab.local     kv-master.local     kv-master" >> /vagrant/hosts.out
 
@@ -30,8 +29,7 @@ else
     if (( $NODE == 0 )) ; then
 
         sed -i "s+# PassThroughPattern: \.\*+PassThroughPattern: .*+g" /etc/apt-cacher-ng/acng.conf
-        systemctl start apt-cacher-ng
-        systemctl enable apt-cacher-ng
+        systemctl restart apt-cacher-ng
 
         kubeadm init --control-plane-endpoint "kv-scaler.lab.local:6443" --apiserver-advertise-address $MASTER_IP --upload-certs --pod-network-cidr $POD_CIDR --apiserver-cert-extra-sans kv-master.lab.local --apiserver-cert-extra-sans kv-scaler.lab.local | tee /vagrant/kubeadm-init.out
 
