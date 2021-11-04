@@ -50,7 +50,7 @@ cat /vagrant/hosts.out >> /etc/hosts
 
 case $CONTAINER_RUNTIME in
 containerd)
-apt install -y containerd
+apt install -y containerd docker.io
 ### containerd
 
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
