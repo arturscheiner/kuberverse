@@ -22,7 +22,10 @@ then
 
   ### Install packages to allow apt to use a repository over HTTPS
   apt-get update
-  apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+  apt-get install -y apt-cacher-ng apt-transport-https ca-certificates curl software-properties-common
+
+  systemctl start apt-cacher-ng
+  systemctl enable apt-cacher-ng
 
   ### Add Kubernetes GPG key
   #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -41,15 +44,12 @@ then
   ### Refresh apt cache install packages
   apt-get update
 
-  apt-get install -y nfs-kernel-server nfs-common apt-cacher-ng \
+  apt-get install -y nfs-kernel-server nfs-common \
                     traceroute htop httpie bash-completion ruby \
                     kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
 fi
 
 cat /vagrant/hosts.out >> /etc/hosts
-
-systemctl start apt-cacher-ng
-systemctl enable apt-cacher-ng
 
 case $CONTAINER_RUNTIME in
 containerd)
