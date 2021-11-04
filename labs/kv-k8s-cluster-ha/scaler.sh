@@ -11,7 +11,7 @@ MASTER_IPS=$(echo $3 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 export DEBIAN_FRONTEND=noninteractive
 
 ### Install packages to allow apt to use a repository over HTTPS
-apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common haproxy
+apt update && apt install apt-transport-https ca-certificates curl software-properties-common haproxy
 
 ### Add Docker’s official GPG key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -24,9 +24,9 @@ add-apt-repository \
 
 add-apt-repository ppa:vbernat/haproxy-2.0 -y
 
-apt-get update
+apt update
 
-apt-get install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproxy ruby docker-ce
+apt install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproxy ruby docker-ce
 
 systemctl stop haproxy
 

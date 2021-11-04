@@ -235,7 +235,7 @@ class KvLab
       config.vm.define "kv-worker-#{i}" do |worker|
         worker.vm.box = BOX_IMAGE
         worker.vm.hostname = "kv-worker-#{i}"
-        worker.vm.network :private_network, ip: workerIp
+        worker.vm.network :private_network, ip: workerIp, name: "kvnet0"
         worker.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--cpus", 2, "--natdnshostresolver1", "on"]
           vb.memory = WORKER_MEMORY

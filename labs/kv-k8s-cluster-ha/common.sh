@@ -21,8 +21,8 @@ then
   export DEBIAN_FRONTEND=noninteractive
 
   ### Install packages to allow apt to use a repository over HTTPS
-  apt-get update
-  apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+  apt update
+  apt install -y apt-transport-https ca-certificates curl software-properties-common
 
   ### Add Kubernetes GPG key
   #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -39,9 +39,9 @@ then
   add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $UBUNTU_CODENAME stable"
 
   ### Refresh apt cache install packages
-  apt-get update
+  apt update
 
-  apt-get install -y nfs-kernel-server nfs-common \
+  apt install -y nfs-kernel-server nfs-common \
                     traceroute htop httpie bash-completion ruby \
                     kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
 fi
@@ -50,7 +50,7 @@ cat /vagrant/hosts.out >> /etc/hosts
 
 case $CONTAINER_RUNTIME in
 containerd)
-apt-get install -y containerd
+apt install -y containerd
 ### containerd
 
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
@@ -123,9 +123,9 @@ EOF
 
 
 ### install podman
-apt-get install software-properties-common -y
+apt install software-properties-common -y
 add-apt-repository -y ppa:projectatomic/ppa
-sudo apt-get -qq -y install podman containers-common
+sudo apt -qq -y install podman containers-common
 cat <<EOF | sudo tee /etc/containers/registries.conf
 [registries.search]
 registries = ['docker.io']
@@ -139,7 +139,7 @@ systemctl restart containerd
 systemctl enable kubelet && systemctl start kubelet
 ;;
 docker)
-apt-get install -y docker-ce=5:18.09.1~3-0~ubuntu-$UBUNTU_CODENAME
+apt install -y docker-ce=5:18.09.1~3-0~ubuntu-$UBUNTU_CODENAME
 # Setup Docker daemon
 cat > /etc/docker/daemon.json <<EOF
 {
