@@ -6,7 +6,15 @@
 
 KVMSG=$1
 SCALER_IP=$2
-MASTER_IPS=$(echo $3 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
+CONTAINER_RUNTIME=$3
+MASTER_IPS=$(echo $4 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
+
+
+
+
+
+if [[ ! $BOX_IMAGE =~ "kuberverse" ]]
+then
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -29,6 +37,7 @@ add-apt-repository ppa:vbernat/haproxy-2.0 -y
 apt update
 
 apt install -y avahi-daemon libnss-mdns traceroute htop httpie bash-completion haproxy ruby docker-ce
+fi
 
 systemctl stop haproxy
 
