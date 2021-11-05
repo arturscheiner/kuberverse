@@ -28,7 +28,7 @@ CONTAINER_RUNTIME = "containerd"
 
 # Define CNI Provider
 # Choose between calico|weave|flannel
-CNI_PROVIDER = "calico"
+CNI_PROVIDER = "weave"
 
 # Change these values if you wish to play with the 
 # cluster size. Do this before starting your cluster
@@ -149,11 +149,11 @@ class KvLab
       config.vm.define "kv-scaler-#{i}" do |scaler|    
         scaler.vm.box = BOX_IMAGE
         scaler.vm.hostname = "kv-scaler-#{i}"
-        scaler.vm.network :private_network, ip: scalerIp
+        scaler.vm.network :private_network, ip: scalerIp, nic_type: "virtio"
         scaler.vm.network "forwarded_port", guest: 6443, host: 6443
 
         scaler.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--cpus", 2]
+          vb.customize ["modifyvm", :id, "--cpus", 2, "--nictype1", "virtio"]
           vb.memory = SCALER_MEMORY
         end
 
@@ -165,6 +165,8 @@ class KvLab
         end
        
         $script = <<-SCRIPT
+
+          echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
           echo "# Added by Kuberverse" > /vagrant/hosts.out
           echo "#{scalerIp} kv-scaler.lab.local kv-scaler.local kv-master" >> /vagrant/hosts.out
 
@@ -173,7 +175,7 @@ class KvLab
           chmod +x /home/vagrant/.kv/scaler.sh
           /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} "#{masterIps}"
         SCRIPT
-        scaler.vm.provision "shell", inline: $script
+        scaler.vm.provision "shell", inline: $script, keep_color: true
       end
   end
 
@@ -186,7 +188,7 @@ class KvLab
       config.vm.define "kv-master-#{i}" do |master|
         master.vm.box = BOX_IMAGE
         master.vm.hostname = "kv-master-#{i}"
-        master.vm.network :private_network, ip: masterIp
+        master.vm.network :private_network, ip: masterIp, nic_type: "virtio"
         
         $script = ""
 
@@ -199,7 +201,7 @@ class KvLab
         end
 
         master.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--cpus", 2]
+          vb.customize ["modifyvm", :id, "--cpus", 2, "--nictype1", "virtio"]
           vb.memory = MASTER_MEMORY
         end
 
@@ -213,7 +215,22 @@ class KvLab
         $script = $script + <<-SCRIPT
 
           mkdir -p /home/vagrant/.kv
-  
+          
+          i=#{i}
+
+          if [ $i == 0 ]; then
+            apt install -y apt-cacher-ng
+
+            systemctl start apt-cacher-ng
+            systemctl enable apt-cacher-ng
+
+            sed -i "s+# PassThroughPattern: \.\*+PassThroughPattern: .*+g" /etc/apt-cacher-ng/acng.conf
+            systemctl restart apt-cacher-ng
+          else
+            echo 'Acquire::http::Proxy "http://10.8.8.10:3142";' >> /etc/apt/apt.conf.d/00aptproxy
+          fi
+            echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
+
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
           /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
@@ -222,7 +239,7 @@ class KvLab
           chmod +x /home/vagrant/.kv/master.sh
           /home/vagrant/.kv/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{CNI_PROVIDER} #{MASTER_COUNT == 1 ? "single" : "multi"}
         SCRIPT
-        master.vm.provision "shell", inline: $script
+        master.vm.provision "shell", inline: $script, keep_color: true
       end
     end   
   end
@@ -235,9 +252,9 @@ class KvLab
       config.vm.define "kv-worker-#{i}" do |worker|
         worker.vm.box = BOX_IMAGE
         worker.vm.hostname = "kv-worker-#{i}"
-        worker.vm.network :private_network, ip: workerIp, name: "kvnet0"
+        worker.vm.network :private_network, ip: workerIp, nic_type: "virtio"
         worker.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--cpus", 2, "--natdnshostresolver1", "on"]
+          vb.customize ["modifyvm", :id, "--cpus", 2, "--nictype1", "virtio"]
           vb.memory = WORKER_MEMORY
         end
 
@@ -249,7 +266,11 @@ class KvLab
         end
   
         $script = <<-SCRIPT
+
           mkdir -p /home/vagrant/.kv
+
+          echo 'Acquire::http::Proxy "http://10.8.8.10:3142";' >> /etc/apt/apt.conf.d/00aptproxy
+          echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
   
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
@@ -259,7 +280,7 @@ class KvLab
           chmod +x /home/vagrant/.kv/worker.sh
           /home/vagrant/.kv/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
         SCRIPT
-        worker.vm.provision "shell", inline: $script
+        worker.vm.provision "shell", inline: $script, keep_color: true
       end
     end
   end

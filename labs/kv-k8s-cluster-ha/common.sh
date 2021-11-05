@@ -131,6 +131,8 @@ cat <<EOF | sudo tee /etc/containers/registries.conf
 registries = ['docker.io']
 EOF
 
+podman network rm podman
+
 
 ### start services
 systemctl daemon-reload
