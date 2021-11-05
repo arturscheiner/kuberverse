@@ -10,13 +10,13 @@
 # Is not recommended, but you can change the base box.
 # This means that all the VMs will use the same image.
 # For vmware_desktop provider use
-BOX_IMAGE = "bento/ubuntu-18.04"
+#BOX_IMAGE = "bento/ubuntu-18.04"
 # For virtualbox provider you can choose to use
 # bento or kuberverse images. The difference is
 # that kuberverse images are pre-loaded with
 # the packages needed to create the cluster
 # that means less time to build the cluster.
-# BOX_IMAGE = "kuberverse/ubuntu-16.04"
+BOX_IMAGE = "kuberverse/ubuntu-18.04"
 
 # Define the k8s version to be used on this lab.
 KUBE_VERSION = "1.22.3"
@@ -166,7 +166,6 @@ class KvLab
        
         $script = <<-SCRIPT
 
-          echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
           echo "# Added by Kuberverse" > /vagrant/hosts.out
           echo "#{scalerIp} kv-scaler.lab.local kv-scaler.local kv-master" >> /vagrant/hosts.out
 
@@ -216,21 +215,6 @@ class KvLab
 
           mkdir -p /home/vagrant/.kv
           
-          i=#{i}
-
-          if [ $i == 0 ]; then
-            apt install -y apt-cacher-ng
-
-            systemctl start apt-cacher-ng
-            systemctl enable apt-cacher-ng
-
-            sed -i "s+# PassThroughPattern: \.\*+PassThroughPattern: .*+g" /etc/apt-cacher-ng/acng.conf
-            systemctl restart apt-cacher-ng
-          else
-            echo 'Acquire::http::Proxy "http://10.8.8.10:3142";' >> /etc/apt/apt.conf.d/00aptproxy
-          fi
-            echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
-
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh
           /home/vagrant/.kv/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
@@ -268,9 +252,6 @@ class KvLab
         $script = <<-SCRIPT
 
           mkdir -p /home/vagrant/.kv
-
-          echo 'Acquire::http::Proxy "http://10.8.8.10:3142";' >> /etc/apt/apt.conf.d/00aptproxy
-          echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
   
           wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
           chmod +x /home/vagrant/.kv/common.sh

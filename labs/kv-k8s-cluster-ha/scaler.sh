@@ -10,6 +10,8 @@ MASTER_IPS=$(echo $3 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 
 export DEBIAN_FRONTEND=noninteractive
 
+echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
+
 ### Install packages to allow apt to use a repository over HTTPS
 apt update && apt install apt-transport-https ca-certificates curl software-properties-common haproxy
 

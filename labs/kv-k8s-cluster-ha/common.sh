@@ -22,7 +22,7 @@ then
 
   ### Install packages to allow apt to use a repository over HTTPS
   apt update
-  apt install -y apt-transport-https ca-certificates curl software-properties-common
+  apt install -y apt-transport-https ca-certificates curl software-properties-common apt-cacher-ng
 
   ### Add Kubernetes GPG key
   #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -38,34 +38,43 @@ then
   ### Add Docker apt repository
   add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $UBUNTU_CODENAME stable"
 
+  add-apt-repository -y ppa:projectatomic/ppa
+
   ### Refresh apt cache install packages
   apt update
 
-  apt install -y nfs-kernel-server nfs-common \
+  apt install -y nfs-kernel-server nfs-common containerd docker.io software-properties-common podman containers-common \
                     traceroute htop httpie bash-completion ruby \
                     kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
+  
+  sed -i "s+# PassThroughPattern: \.\*+PassThroughPattern: .*+g" /etc/apt-cacher-ng/acng.conf
+  systemctl restart apt-cacher-ng
+  systemctl start apt-cacher-ng
+  systemctl enable apt-cacher-ng
+  echo 'Acquire::http::Proxy "http://10.8.8.10:3142";' >> /etc/apt/apt.conf.d/00aptproxy
+  echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
 fi
 
 cat /vagrant/hosts.out >> /etc/hosts
 
 case $CONTAINER_RUNTIME in
 containerd)
-apt install -y containerd docker.io
+
 ### containerd
 
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
-sudo modprobe overlay
-sudo modprobe br_netfilter
+modprobe overlay
+modprobe br_netfilter
 cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 EOF
-sudo sysctl --system
-sudo mkdir -p /etc/containerd
+sysctl --system
+mkdir -p /etc/containerd
 
 
 ### containerd config
@@ -114,7 +123,7 @@ EOF
 }
 
 
-### kubelet should use containerd
+### kubelet should use containerd x
 {
 cat <<EOF | sudo tee /etc/default/kubelet
 KUBELET_EXTRA_ARGS="--container-runtime remote --container-runtime-endpoint unix:///run/containerd/containerd.sock"
@@ -123,16 +132,12 @@ EOF
 
 
 ### install podman
-apt install software-properties-common -y
-add-apt-repository -y ppa:projectatomic/ppa
-sudo apt -qq -y install podman containers-common
 cat <<EOF | sudo tee /etc/containers/registries.conf
 [registries.search]
 registries = ['docker.io']
 EOF
 
 podman network rm podman
-
 
 ### start services
 systemctl daemon-reload
@@ -141,7 +146,7 @@ systemctl restart containerd
 systemctl enable kubelet && systemctl start kubelet
 ;;
 docker)
-apt install -y docker-ce=5:18.09.1~3-0~ubuntu-$UBUNTU_CODENAME
+
 # Setup Docker daemon
 cat > /etc/docker/daemon.json <<EOF
 {
