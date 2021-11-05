@@ -6,7 +6,7 @@
 
 KVMSG=$1
 SCALER_IP=$2
-CONTAINER_RUNTIME=$3
+BOX_IMAGE=$3
 MASTER_IPS=$(echo $4 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
 
 
