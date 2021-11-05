@@ -172,7 +172,7 @@ class KvLab
           mkdir -p /home/vagrant/.kv
           wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
           chmod +x /home/vagrant/.kv/scaler.sh
-          /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} #{CONTAINER_RUNTIME} "#{masterIps}"
+          /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} #{BOX_IMAGE} "#{masterIps}"
         SCRIPT
         scaler.vm.provision "shell", inline: $script, keep_color: true
       end
