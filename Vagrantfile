@@ -7,7 +7,7 @@
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/master.sh
 #               https://raw.githubusercontent.com/arturscheiner/kuberverse/master/labs/kv-k8s-cluster-ha/worker.sh
 
-require 'lib/rb/kvlab.rb'
+require_relative 'lib/rb/kvlab.rb'
 
 # Is not recommended, but you can change the base box.
 # This means that all the VMs will use the same image.
