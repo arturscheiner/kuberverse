@@ -121,12 +121,14 @@ class KvLab
             mkdir -p /home/vagrant/.kv
             
             #wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            chmod +x /vagrant/lib/sh/common.sh
+            #cp /vagrant/lib/sh/common.sh /home/vagrant/.kv/common.sh
+            #chmod +x /vagrant/lib/sh/common.sh
             /vagrant/lib/sh/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
     
             #wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
-            chmod +x /vagrant/lib/sh/master.sh
-            /vagrant/lib/sh/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{CNI_PROVIDER} #{MASTER_COUNT == 1 ? "single" : "multi"}
+            #cp /vagrant/lib/sh/master.sh /home/vagrant/.kv/master.sh
+            #chmod +x /vagrant/lib/sh/master.sh
+            /bin/bash /vagrant/lib/sh/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{CNI_PROVIDER} #{MASTER_COUNT == 1 ? "single" : "multi"}
           SCRIPT
           master.vm.provision "shell", inline: $script, keep_color: true
         end
@@ -159,12 +161,14 @@ class KvLab
             mkdir -p /home/vagrant/.kv
     
             #wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            chmod +x /vagrant/lib/sh/common.sh
-            /vagrant/lib/sh/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
+            #cp /vagrant/lib/sh/common.sh /home/vagrant/.kv/common.sh
+            #chmod +x /vagrant/lib/sh/common.sh
+            /bin/bash /vagrant/lib/sh/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}
     
             #wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
-            chmod +x /vagrant/lib/sh/worker.sh
-            /vagrant/lib/sh/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
+            #cp /vagrant/lib/sh/worker.sh /home/vagrant/.kv/worker.sh
+            #chmod +x /vagrant/lib/sh/worker.sh
+            /bin/bash /vagrant/lib/sh/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}
           SCRIPT
           worker.vm.provision "shell", inline: $script, keep_color: true
         end
