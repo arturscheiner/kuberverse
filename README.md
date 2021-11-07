@@ -21,4 +21,10 @@ To run the labs you will need to have pre-installed on your computer the latest 
 The gold rule here is **more is better**. As we will create clusters using virtual machines running on your desk computer or notebook, resources will be needed in the proportion of your use. To be used for study, and using my computer (an old macbook pro late 2012 retina, with a Intel Core i5 processor with 8Gb of memory) as the basis for this labs, I can assure you can run a k8s cluster with 1 master with 2Gb of memory and 2 workers with 1Gb each. This configuration fits almost all of the 6 scenarios of the CKA and the 4 scenarios of CKAD certification exams.
 
 ### How to use
-Just clone this repository edit the kvlab.conf.rb to met your requirements and run 'vagrant up'. These kuberverse scripts will create the environment for you.
+First you need to clone this repository:
+
+1 - Find the directory where you want to start you labs.
+2 - From inside this folder run: **git clone https://github.com/arturscheiner/kuberverse.git**
+3 - It will create the folder ./kuberverse (when clonning you can add the desired folder name at the end of the git clone command)
+4 - Inside the ./kuberverse folder, edit the file **kvlab.conf.rv** follow the instructions inside of it
+5 - From this folder, run the command **vagrant up** and wait a couple of minutes after that you will be able to access your cluster and play with it
