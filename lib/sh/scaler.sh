@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 # kuberverse kubernetes cluster lab
-# version: 0.1.0-alpha
+# version: 0.5.0
 # description: this is the scaler (load balancer) script file
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
-KVMSG=$1
-SCALER_IP=$2
-BOX_IMAGE=$3
-MASTER_IPS=$(echo $4 | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
+# KVMSG=$1
+# SCALER_IP=$2
+# BOX_IMAGE=$3
+MASTER_IPS=$(echo $KV_MASTER_IPS_ARRAY | sed -e 's/,//g' -e 's/\]//g' -e 's/\[//g')
+#MASTER_IPS=$KV_MASTER_IPS_ARRAY
 
-
-
-
-
-if [[ ! $BOX_IMAGE =~ "kuberverse" ]]
+if [[ ! $KV_BOX_IMAGE =~ "kuberverse" ]]
 then
 
 export DEBIAN_FRONTEND=noninteractive
@@ -84,14 +81,6 @@ for mips in $MASTER_IPS; do
   ((i++))
 done
 
-# echo "#Added by Kuberverse" > /vagrant/hosts.out
-# echo "$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler" >> /vagrant/hosts.out
-
-#cat > /vagrant/hosts.out<<EOF
-# Added by Kuberverse
-#$SCALER_IP     kv-scaler.lab.local     kv-scaler.local     kv-scaler
-#EOF
-
-cat /vagrant/hosts.out >> /etc/hosts
+cat /vagrant/.kv/hosts >> /etc/hosts
 
 systemctl restart haproxy

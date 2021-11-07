@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
 # kuberverse kubernetes cluster lab
-# version: 0.1.0-alpha-a
+# version: 0.5.0
 # description: this is a common script file for masters and workers
 # created by Artur Scheiner - artur.scheiner@gmail.com
 
 #variable definitions
-KVMSG=$1
-BOX_IMAGE=$2
-KUBE_VERSION=$3
-CONTAINER_RUNTIME=$4
-#NODE_ADDRESS=$2
-#MASTER_TYPE=$3
 
-
-if [[ ! $BOX_IMAGE =~ "kuberverse" ]]
+if [[ ! $KV_BOX_IMAGE =~ "kuberverse" ]]
 then
 
   UBUNTU_CODENAME=$(lsb_release -cs)
@@ -45,7 +38,7 @@ then
 
   apt install -y nfs-kernel-server nfs-common containerd docker.io software-properties-common podman containers-common \
                     traceroute htop httpie bash-completion ruby \
-                    kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
+                    kubelet=${KV_KUBE_VERSION}-00 kubeadm=${KV_KUBE_VERSION}-00 kubectl=${KV_KUBE_VERSION}-00 kubernetes-cni
   
   sed -i "s+# PassThroughPattern: \.\*+PassThroughPattern: .*+g" /etc/apt-cacher-ng/acng.conf
   systemctl restart apt-cacher-ng
@@ -55,9 +48,9 @@ then
   echo -e 'Dpkg::Progress-Fancy "1";\nAPT::Color "1";' >> /etc/apt/apt.conf.d/99progress
 fi
 
-cat /vagrant/hosts.out >> /etc/hosts
+cat /vagrant/.kv/hosts >> /etc/hosts
 
-case $CONTAINER_RUNTIME in
+case $KV_CONTAINER_RUNTIME in
 containerd)
 
 ### containerd
@@ -137,7 +130,7 @@ cat <<EOF | sudo tee /etc/containers/registries.conf
 registries = ['docker.io']
 EOF
 
-podman network rm podman
+if [[ $(podman network ls | grep podman) ]]; then podman network rm podman; fi
 
 ### start services
 systemctl daemon-reload
@@ -174,7 +167,7 @@ cri-o)
 ;;
 esac
 
-if [[ ! $BOX_IMAGE =~ "kuberverse" ]]
+if [[ ! $KV_BOX_IMAGE =~ "kuberverse" ]]
 then
   kubeadm config images pull
 fi

@@ -1,60 +1,53 @@
+# kuberverse kubernetes cluster lab
+# version: 0.5.0
+# description: this Vagrantfile creates a cluster with masters and workers
+# created by Artur Scheiner - artur.scheiner@gmail.com
+
+require_relative 'kvshell.rb'
+require_relative 'kvtools.rb'
+
 class KvLab
 
     def initialize
-        puts "********** #{green(KVMSG)} **********"
+        @kvshell = KvShell.new()
+        @kvtools = KvTools.new()
+
+
+        if MASTER_COUNT >= 2
+          $sIPs = @kvtools.iPSa("scaler",1)
+        else
+          $sIPs = []
+        end
+
+        $mIPs = @kvtools.iPSa("master",MASTER_COUNT)
+        $wIPs = @kvtools.iPSa("worker",WORKER_COUNT)
+
+        puts "********** #{KVMSG.green}**********"
   
         checkmark = "\u2713"
         puts checkmark.force_encoding('utf-8').green.bold.blink
   
-        puts "---- Provisioned with k8s #{yellow(KUBE_VERSION)}".blue
-        puts "---- Container runtime is: #{yellow(CONTAINER_RUNTIME)}"
-        puts "---- CNI Provider is: #{yellow(CNI_PROVIDER)}"
+        puts "---- Provisioned with k8s #{KUBE_VERSION.yellow}".blue
+        puts "---- Container runtime is: #{CONTAINER_RUNTIME.yellow}"
+        puts "---- CNI Provider is: #{CNI_PROVIDER.yellow}"
         puts "---- #{MASTER_COUNT} Masters Nodes"
         puts "---- #{WORKER_COUNT} Worker(s) Node(s)" unless MASTER_COUNT == 5
     end
-  
-    def defineIp(type,i,kvln)
-        case type
-        when "master" 
-          return kvln.split('.')[0..-2].join('.') + ".#{i + 10}"
-        when "worker"
-          return kvln.split('.')[0..-2].join('.') + ".#{i + 20}"
-        when "scaler"
-          return kvln.split('.')[0..-2].join('.') + ".#{i + 50}"
-        end
-    end
-    
+
     def createScaler(config)
   
-      i = 0
-      scalerIp = self.defineIp("scaler",i,KV_LAB_NETWORK)
-  
-       # if MASTER_COUNT == 1
-       #   p "This is a Single Master Cluster with:"
-       #   p "---- #{MASTER_COUNT} Master Node"
-       #   p "---- #{WORKER_COUNT} Worker(s) Node(s)"
-       #  p "---- Provisioned with Kubernetes v#{KUBE_VERSION}"
-       #  return
-       # end
+      node = 0
+      ip = @kvtools.defineIp("scaler",node,KV_LAB_NETWORK)
   
         if MASTER_COUNT != 1
           puts "---- 1 Scaler Node"
-          puts "The Scaler #{i} Ip is #{scalerIp}"
+          puts "The Scaler #{node} Ip is #{ip}"
         end
   
-        masterIps = Array[]
-  
-        (0..MASTER_COUNT-1).each do |m|
-          masterIps.push(self.defineIp("master",m,KV_LAB_NETWORK))
-        end
-  
-        # p masterIps.length
-        # masterIps.each {|s| p s}
-  
-        config.vm.define "kv-scaler-#{i}" do |scaler|    
+        config.vm.define "kv-scaler-#{node}" do |scaler|    
           scaler.vm.box = BOX_IMAGE
-          scaler.vm.hostname = "kv-scaler-#{i}"
-          scaler.vm.network :private_network, ip: scalerIp, nic_type: "virtio"
+          scaler.vm.hostname = "kv-scaler-#{node}"
+          scaler.vm.network :private_network, ip: ip, nic_type: "virtio"
           scaler.vm.network "forwarded_port", guest: 6443, host: 6443
   
           scaler.vm.provider :virtualbox do |vb|
@@ -68,40 +61,31 @@ class KvLab
               v.vmx["numvcpus"] = "2"
             end
           end
-         
-          $script = <<-SCRIPT
-  
-            echo "# Added by Kuberverse" > /vagrant/hosts.out
-            echo "#{scalerIp} kv-scaler.lab.local kv-scaler.local kv-master" >> /vagrant/hosts.out
-  
-            mkdir -p /home/vagrant/.kv
-            wget -q #{SCALER_SCRIPT_URL} -O /home/vagrant/.kv/scaler.sh
-            chmod +x /home/vagrant/.kv/scaler.sh
-            /home/vagrant/.kv/scaler.sh "#{KVMSG}" #{scalerIp} #{BOX_IMAGE} "#{masterIps}"
-          SCRIPT
-          scaler.vm.provision "shell", inline: $script, keep_color: true
+          if ARGV[0] == "destroy"
+            puts "Deleting .kv directory"
+            @kvtools.cleanKvDir()     
+          else
+            @kvtools.addToHosts(ip,scaler.vm.hostname)
+          end
+          $s_script = @kvshell.env(node,ip,scaler.vm.hostname,$sIPs,$mIPs,$wIPs) + @kvshell.scaler()
+          scaler.vm.provision "shell", inline: $s_script, keep_color: true
         end
     end
   
     def createMaster(config)
      
-      (0..MASTER_COUNT-1).each do |i|
-        masterIp = self.defineIp("master",i,KV_LAB_NETWORK)
+      (0..MASTER_COUNT-1).each do |node|
+        ip = @kvtools.defineIp("master",node,KV_LAB_NETWORK)
   
-        puts "The Master #{i} Ip is #{masterIp}"
-        config.vm.define "kv-master-#{i}" do |master|
+        puts "The Master #{node} Ip is #{ip}"
+        config.vm.define "kv-master-#{node}" do |master|
           master.vm.box = BOX_IMAGE
-          master.vm.hostname = "kv-master-#{i}"
-          master.vm.network :private_network, ip: masterIp, nic_type: "virtio"
+          master.vm.hostname = "kv-master-#{node}"
+          master.vm.network :private_network, ip: ip, nic_type: "virtio"
           
-          $script = ""
   
           if MASTER_COUNT == 1
             master.vm.network "forwarded_port", guest: 6443, host: 6443
-            $script = <<-SCRIPT
-              echo "# Added by Kuberverse" > /vagrant/hosts.out
-              echo "#{masterIp} kv-master.lab.local kv-master.local kv-master kv-scaler.lab.local" >> /vagrant/hosts.out
-            SCRIPT
           end
   
           master.vm.provider :virtualbox do |vb|
@@ -115,35 +99,28 @@ class KvLab
               v.vmx["numvcpus"] = "2"
             end
           end
-  
-          $script = $script + <<-SCRIPT
-  
-            mkdir -p /home/vagrant/.kv
-            
-            #wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            #cp /vagrant/lib/sh/common.sh /home/vagrant/.kv/common.sh
-            #chmod +x /vagrant/lib/sh/common.sh
-            sh "/vagrant/lib/sh/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}"
-    
-            #wget -q #{MASTER_SCRIPT_URL} -O /home/vagrant/.kv/master.sh
-            #cp /vagrant/lib/sh/master.sh /home/vagrant/.kv/master.sh
-            #chmod +x /vagrant/lib/sh/master.sh
-            sh "/vagrant/lib/sh/master.sh "#{KVMSG}" #{i} #{POD_CIDR} #{masterIp} #{CNI_PROVIDER} #{MASTER_COUNT == 1 ? "single" : "multi"}"
-          SCRIPT
-          master.vm.provision "shell", inline: $script, keep_color: true
+          if ARGV[0] == "destroy"
+            puts "Deleting .kv directory"
+            @kvtools.cleanKvDir()     
+          else
+            @kvtools.addToHosts(ip,master.vm.hostname)
+          end
+          $m_script = @kvshell.env(node,ip,master.vm.hostname,$sIPs,$mIPs,$wIPs) + @kvshell.master()
+
+          master.vm.provision "shell", inline: $m_script, keep_color: true
         end
       end   
     end
   
     def createWorker(config)
-      (0..WORKER_COUNT-1).each do |i|
-        workerIp = self.defineIp("worker",i,KV_LAB_NETWORK)
+      (0..WORKER_COUNT-1).each do |node|
+        ip = @kvtools.defineIp("worker",node,KV_LAB_NETWORK)
   
-        puts "The Worker #{i} Ip is #{workerIp}"
-        config.vm.define "kv-worker-#{i}" do |worker|
+        puts "The Worker #{node} Ip is #{ip}"
+        config.vm.define "kv-worker-#{node}" do |worker|
           worker.vm.box = BOX_IMAGE
-          worker.vm.hostname = "kv-worker-#{i}"
-          worker.vm.network :private_network, ip: workerIp, nic_type: "virtio"
+          worker.vm.hostname = "kv-worker-#{node}"
+          worker.vm.network :private_network, ip: ip, nic_type: "virtio"
           worker.vm.provider :virtualbox do |vb|
             vb.customize ["modifyvm", :id, "--cpus", 2, "--nictype1", "virtio"]
             vb.memory = WORKER_MEMORY
@@ -155,23 +132,16 @@ class KvLab
               v.vmx["numvcpus"] = "2"
             end
           end
-    
-          $script = <<-SCRIPT
-  
-            mkdir -p /home/vagrant/.kv
-    
-            #wget -q #{COMMON_SCRIPT_URL} -O /home/vagrant/.kv/common.sh
-            #cp /vagrant/lib/sh/common.sh /home/vagrant/.kv/common.sh
-            #chmod +x /vagrant/lib/sh/common.sh
-            sh "/vagrant/lib/sh/common.sh "#{KVMSG}" #{BOX_IMAGE} #{KUBE_VERSION} #{CONTAINER_RUNTIME}"
-    
-            #wget -q #{WORKER_SCRIPT_URL} -O /home/vagrant/.kv/worker.sh
-            #cp /vagrant/lib/sh/worker.sh /home/vagrant/.kv/worker.sh
-            #chmod +x /vagrant/lib/sh/worker.sh
-            sh "/vagrant/lib/sh/worker.sh "#{KVMSG}" #{i} #{workerIp} #{MASTER_COUNT == 1 ? "single" : "multi"}"
-          SCRIPT
-          worker.vm.provision "shell", inline: $script, keep_color: true
+          if ARGV[0] == "destroy"
+            puts "Deleting .kv directory"
+            @kvtools.cleanKvDir()     
+          else
+            @kvtools.addToHosts(ip,worker.vm.hostname)
+          end
+          $w_script = @kvshell.env(node,ip,worker.vm.hostname,$sIPs,$mIPs,$wIPs) + @kvshell.worker()
+          worker.vm.provision "shell", inline: $w_script, keep_color: true
         end
       end
     end
+    
   end
