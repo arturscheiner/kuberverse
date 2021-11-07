@@ -26,5 +26,5 @@ First you need to clone this repository:
 - Find the directory where you want to start you labs.
 - From inside this folder run: **git clone https://github.com/arturscheiner/kuberverse.git**
 - It will create the folder ./kuberverse (when clonning you can add the desired folder name at the end of the git clone command)
-- Inside the ./kuberverse folder, edit the file **kvlab.conf.rv** follow the instructions inside of it
+- Inside the ./kuberverse folder, edit the file **kvlab.conf.rb** follow the instructions inside of it
 - From this folder, run the command **vagrant up** and wait a couple of minutes after that you will be able to access your cluster and play with it
