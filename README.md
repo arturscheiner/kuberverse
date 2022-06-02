@@ -23,7 +23,7 @@ The gold rule here is **more is better**. As we will create clusters using virtu
 ### How to use
 First you need to clone this repository:
 
-- Find the directory where you want to start you labs.
+- Find the directory where you want to start you labs..
 - From inside this folder run: **git clone https://github.com/arturscheiner/kuberverse.git**
 - It will create the folder ./kuberverse (when clonning you can add the desired folder name at the end of the git clone command)
 - Inside the ./kuberverse folder, edit the file **kvlab.conf.rb** follow the instructions inside of it
